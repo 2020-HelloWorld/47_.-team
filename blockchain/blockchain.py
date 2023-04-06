@@ -15,8 +15,8 @@ if __name__=="__main__":
     blockchain.new_data(
         sender="A",  #it implies that this node has created a new block
         recipient="B",  #let's send Quincy some coins!
-        quantity=
-        1,  #creating a new block (or identifying the proof number) is awarded with 1
+        quantity=1,  #creating a new block (or identifying the proof number) is awarded with 1
+        proof = "ID0"
     )
 
     last_hash = last_block.calculate_hash
@@ -24,3 +24,4 @@ if __name__=="__main__":
 
     print("***Mining fccCoin has been successful***")
     print(blockchain.latest_block.users)
+    print(blockchain.latest_block.data)

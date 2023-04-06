@@ -52,12 +52,13 @@ class BlockChain:
 
         return True
 
-    def new_data(self, sender, recipient, quantity):
+    def new_data(self, sender, recipient, quantity,proof=None):
         self.current_data.append({
             'sender': sender,
             'recipient': recipient,
             'quantity': quantity,
             'time' : time.time(),
+            'proof':proof
         })
         return True
 
