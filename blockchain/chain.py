@@ -3,16 +3,21 @@ import time
 
 from block import Block
 
+COIN1 = "$GOLD"
+COIN2 = "$SILVER"
 
-INITIAL_TOKEN = 100
-NEW_TOKEN_COUNT = 10
+INITIAL_TOKEN_COIN1 = 100
+NEW_TOKEN_COUNT_COIN1 = 10
+
+INITIAL_TOKEN_COIN2 = 100
+NEW_TOKEN_COUNT_COIN2 = 10
 
 class BlockChain:
-
-    def __init__(self):
+    def __init__(self,coin):
         self.chain = []
         self.current_data = []
         self.nodes = set()
+        self.coin = coin
         self.construct_genesis()
 
     def construct_genesis(self):
@@ -23,9 +28,20 @@ class BlockChain:
         if prev_hash !=0:
             users = self.latest_block.users
         else:
+            INITIAL_TOKEN = None
+            if self.coin ==COIN1:
+                INITIAL_TOKEN = INITIAL_TOKEN_COIN1
+            else:
+                INITIAL_TOKEN = INITIAL_TOKEN_COIN2
             users = {
                 "admin": INITIAL_TOKEN
             }
+
+        NEW_TOKEN_COUNT = None
+        if self.coin ==COIN1:
+            NEW_TOKEN_COUNT = NEW_TOKEN_COUNT_COIN1
+        else:
+            INITIAL_TOKEN = NEW_TOKEN_COUNT_COIN2
         if newuser:
             users[id] = 0
             users["admin"]+= NEW_TOKEN_COUNT
