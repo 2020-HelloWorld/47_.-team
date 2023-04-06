@@ -1,4 +1,5 @@
 {
     "database": "mongodb://localhost:27017/edcred",
+    "jwtTok": "EDCRED@123",
     "port": 8000
 }

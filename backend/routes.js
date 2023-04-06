@@ -9,6 +9,7 @@ router.get('/', controller.hello);
 
 router.get('/verifyToken', controller.verifyToken);
 router.post('/login', controller.login);
+router.post('/fetchBalance', controller.isLoggedIn, controller.fetchBalance);
 
 // export the routes
 module.exports = router;
