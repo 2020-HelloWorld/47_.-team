@@ -9,7 +9,7 @@ import PublicRoute from "./Utils/PublicRoute";
 import { getToken, removeUserSession, setUserSession } from "./Utils/Common";
 import Login from "./Components/Login";
 import Navbar from "./Components/Navbar";
-import Dashboard from "./Components/Dashboard";
+import Dashboard from "./Components/Dashboard/Dashboard";
 import "./App.css";
 
 function App() {
