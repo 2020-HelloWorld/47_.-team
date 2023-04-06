@@ -3,14 +3,7 @@ import time
 
 from block import Block
 
-COIN1 = "$GOLD"
-COIN2 = "$SILVER"
-
-INITIAL_TOKEN_COIN1 = 100
-NEW_TOKEN_COUNT_COIN1 = 10
-
-INITIAL_TOKEN_COIN2 = 100
-NEW_TOKEN_COUNT_COIN2 = 10
+from config import COIN1,INITIAL_TOKEN_COIN1,NEW_TOKEN_COUNT_COIN1,INITIAL_TOKEN_COIN2,NEW_TOKEN_COUNT_COIN2
 
 class BlockChain:
     def __init__(self,coin):

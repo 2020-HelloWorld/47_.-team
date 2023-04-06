@@ -2,11 +2,7 @@ import pickle
 
 from chain import BlockChain
 
-COIN1 = "$GOLD"
-COIN2 = "$SILVER"
-FILE1 = "log/chain1.pickle"
-FILE2 = "log/chain2.pickle"
-RATIO = 2
+from config import COIN1,COIN2,FILE1,FILE2,RATIO
 
 def initialize():
     try:
@@ -96,6 +92,16 @@ def convert_coin(blockchain1,blockchain2,user,amount):
         return True 
     except:
         False
+
+def get_balance(blockchain1,blockchain2,username):
+    try:
+        gold = blockchain1.latest_block.users[username]
+        silver = blockchain2.latest_block.users[username]
+    except:
+        gold = -1
+        silver = -1
+        
+    return {COIN1:gold,COIN2:silver}
 
 
 if __name__=="__main__":
