@@ -4,8 +4,8 @@ from chain import BlockChain
 
 COIN1 = "$GOLD"
 COIN2 = "$SILVER"
-FILE1 = "chain1.pickle"
-FILE2 = "chain2.pickle"
+FILE1 = "log/chain1.pickle"
+FILE2 = "log/chain2.pickle"
 RATIO = 2
 
 def initialize():
@@ -27,55 +27,75 @@ def initialize():
 
     return blockchain1,blockchain2
 
-def transaction(blockchain,sender,recipient,quantity,proof):
-    last_block = blockchain.latest_block
-    last_proof_no = last_block.proof_no
-    proof_no = blockchain.proof_of_work(last_proof_no)
+def transaction(blockchain,sender,recipient,quantity,proof="TRANSACTION"):
+    try:
+        last_block = blockchain.latest_block
+        last_proof_no = last_block.proof_no
+        proof_no = blockchain.proof_of_work(last_proof_no)
 
-    blockchain.new_data(
-        sender=sender,  #it implies that this node has created a new block
-        recipient=recipient,  #let's send Quincy some coins!
-        quantity=quantity,  #creating a new block (or identifying the proof number) is awarded with 1
-        proof = proof
-    )
+        blockchain.new_data(
+            sender=sender,  #it implies that this node has created a new block
+            recipient=recipient,  #let's send Quincy some coins!
+            quantity=quantity,  #creating a new block (or identifying the proof number) is awarded with 1
+            proof = proof
+        )
 
-    last_hash = last_block.calculate_hash
-    block = blockchain.construct_block(proof_no, last_hash)
+        last_hash = last_block.calculate_hash
+        block = blockchain.construct_block(proof_no, last_hash)
 
-    FILE = None
-    if blockchain.coin == COIN1:
-        FILE = FILE1
-    else:
-        FILE = FILE2
+        FILE = None
+        if blockchain.coin == COIN1:
+            FILE = FILE1
+        else:
+            FILE = FILE2
 
-    with open(FILE, "wb") as f:
-        pickle.dump(blockchain, f)
+        with open(FILE, "wb") as f:
+            pickle.dump(blockchain, f)
+
+        return True 
+    
+    except:
+        False
 
 def new_user(blockchain1,blockchain2,id):
-    last_block = blockchain1.latest_block
-    last_proof_no = last_block.proof_no
-    proof_no = blockchain1.proof_of_work(last_proof_no)
-    last_hash = last_block.calculate_hash
-    block = blockchain1.construct_block(proof_no, last_hash,newuser=True,id=id)
-    with open(FILE1, "wb") as f:
-        pickle.dump(blockchain1, f)
+    try:
+        last_block = blockchain1.latest_block
+        last_proof_no = last_block.proof_no
+        proof_no = blockchain1.proof_of_work(last_proof_no)
+        last_hash = last_block.calculate_hash
+        block = blockchain1.construct_block(proof_no, last_hash,newuser=True,id=id)
+        with open(FILE1, "wb") as f:
+            pickle.dump(blockchain1, f)
 
 
-    last_block = blockchain2.latest_block
-    last_proof_no = last_block.proof_no
-    proof_no = blockchain2.proof_of_work(last_proof_no)
-    last_hash = last_block.calculate_hash
-    block = blockchain2.construct_block(proof_no, last_hash,newuser=True,id=id)
-    with open(FILE2, "wb") as f:
-        pickle.dump(blockchain2, f)
+        last_block = blockchain2.latest_block
+        last_proof_no = last_block.proof_no
+        proof_no = blockchain2.proof_of_work(last_proof_no)
+        last_hash = last_block.calculate_hash
+        block = blockchain2.construct_block(proof_no, last_hash,newuser=True,id=id)
+        with open(FILE2, "wb") as f:
+            pickle.dump(blockchain2, f)
+        
+        return True 
+    except:
+        False
 
 
 def claim_credit(blockchain,user,quantity,proof):
+    for i in blockchain.chain:
+        if i.data['proof']==proof:
+            return False
+
     transaction(blockchain=blockchain,sender="admin",recipient=user,quantity= quantity,proof= proof)
+    return True
 
 def convert_coin(blockchain1,blockchain2,user,amount):
-    transaction(blockchain=blockchain1,sender=user,recipient="admin",quantity= amount,proof="CONVERSION")
-    transaction(blockchain=blockchain2,sender="admin",recipient=user,quantity= amount*RATIO,proof="CONVERSION")
+    try:
+        transaction(blockchain=blockchain1,sender=user,recipient="admin",quantity= amount,proof="CONVERSION")
+        transaction(blockchain=blockchain2,sender="admin",recipient=user,quantity= amount*RATIO,proof="CONVERSION")
+        return True 
+    except:
+        False
 
 
 if __name__=="__main__":
