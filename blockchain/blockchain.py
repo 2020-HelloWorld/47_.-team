@@ -80,9 +80,10 @@ def new_user(blockchain1,blockchain2,id):
 
 
 def claim_credit(blockchain,user,quantity,proof):
-    # for i in blockchain.chain:
-    #     if i.data[-1]['proof']==proof:
-    #         return False
+    for blocks in blockchain.chain:
+        for data in blocks.data:
+            if data['proof']==proof:
+                return False
     quantity = int(quantity)
     transaction(blockchain=blockchain,sender="admin",recipient=user,quantity= quantity,proof= proof)
     return True
@@ -107,9 +108,32 @@ def get_balance(blockchain1,blockchain2,username):
     return {COIN1:gold,COIN2:silver}
 
 def get_history(blockchain1,blockchain2,username):
-    list1 = []
-    list2 = []
-    pass
+    res = []
+    for blocks in blockchain1.chain:
+        for data in blocks.data:
+            if data['sender']==username or data['recipient']==username:
+                res.append({
+                    "sender":data['sender'],
+                    "recipient":data['recipient'],
+                    "amount":data['quantity'],
+                    "doc_id":data['proof'],
+                    "time":data['time'],
+                    "token_type":COIN1,
+                })
+    for blocks in blockchain2.chain:
+        for data in blocks.data:
+            if data['sender']==username or data['recipient']==username:
+                res.append({
+                    "sender":data['sender'],
+                    "recipient":data['recipient'],
+                    "amount":data['quantity'],
+                    "doc_id":data['proof'],
+                    "time":data['time'],
+                    "token_type":COIN2,
+                })
+    res.sort(key=lambda x:x["time"])
+
+    return res
 
 
 if __name__=="__main__":

@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 
-from blockchain import transaction,get_balance,new_user,claim_credit,convert_coin
+from blockchain import transaction,get_balance,new_user,claim_credit,convert_coin,get_history
 from app import blockchain1,blockchain2
 
 from config import COIN1
@@ -36,9 +36,9 @@ def userbalance():
 @views.route('/fetch/history', methods=['GET', 'POST'])
 def history():
     if request.method == 'POST': 
-        name = request.form.get('name')#Gets the note from the HTML 
-        #Code 
-    return #Something
+        username = request.form.get('username')
+        re = get_history(blockchain1=blockchain1,blockchain2=blockchain2,username=username)
+    return re
 
 @views.route('/create/user', methods=['GET', 'POST'])
 def create():
