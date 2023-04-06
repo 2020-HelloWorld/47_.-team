@@ -186,19 +186,17 @@ const controller = {
       return res.status(400).json({ ok: "error"})
     }
   },
-  claimCredits: async(
+  convertCredits: async(
     /** @type {expressTypes.Request} */ req,
     /** @type {expressTypes.Response} */ res
   ) => {
-    let { username, recipient, amount, token_type, doc_id } = req.body;
+    let { username, amount } = req.body;
     const formData = new FormData();
     formData.append('recipient', username);
     formData.append('amount', username);
-    formData.append('token_type', username);
-    formData.append('doc_id', username);
     let resp;
     try{
-      resp = await axios.post(`${BC_API}/claim/credits`, formData);
+      resp = await axios.post(`${BC_API}/convert/credits`, formData);
       return res.json({ ok: resp.data.ok });
     }catch(err){
       return res.status(400).json({ ok: "error"})
