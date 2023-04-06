@@ -1,4 +1,5 @@
 import hashlib
+import time
 
 from block import Block
 
@@ -11,14 +12,24 @@ class BlockChain:
         self.construct_genesis()
 
     def construct_genesis(self):
+        
         self.construct_block(proof_no=0, prev_hash=0)
 
     def construct_block(self, proof_no, prev_hash):
+        if prev_hash ==0:
+            users = {
+                "A":10,
+                "B":5
+            }
+        else:
+            users = self.latest_block.users
         block = Block(
             index=len(self.chain),
             proof_no=proof_no,
             prev_hash=prev_hash,
-            data=self.current_data)
+            data=self.current_data,
+            users=users
+            )
         self.current_data = []
 
         self.chain.append(block)
@@ -45,7 +56,8 @@ class BlockChain:
         self.current_data.append({
             'sender': sender,
             'recipient': recipient,
-            'quantity': quantity
+            'quantity': quantity,
+            'time' : time.time(),
         })
         return True
 
