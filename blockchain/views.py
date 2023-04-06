@@ -9,7 +9,7 @@ from config import SUCCESS,FAILURE
 views = Blueprint('views', __name__)
 
 @views.route('/initiate/transaction', methods=['GET', 'POST'])
-def transaction():
+def transaction_view():
     if request.method == 'POST': 
         sender = request.form.get('sender')
         recipient = request.form.get('recipient')
@@ -20,7 +20,6 @@ def transaction():
             blockchain = blockchain1
         else:
             blockchain = blockchain2
-
         re = transaction(blockchain=blockchain,sender=sender,recipient=recipient,quantity=quantity)
         if re:
             return SUCCESS
@@ -31,7 +30,7 @@ def transaction():
 def userbalance():
     if request.method == 'POST': 
         username = request.form.get('username')
-        re = get_balance(username=username)
+        re = get_balance(blockchain1=blockchain1,blockchain2=blockchain2,username=username)
     return re
 
 @views.route('/fetch/history', methods=['GET', 'POST'])

@@ -25,6 +25,7 @@ def initialize():
 
 def transaction(blockchain,sender,recipient,quantity,proof="TRANSACTION"):
     try:
+        quantity = int(quantity)
         last_block = blockchain.latest_block
         last_proof_no = last_block.proof_no
         proof_no = blockchain.proof_of_work(last_proof_no)
@@ -73,20 +74,22 @@ def new_user(blockchain1,blockchain2,id):
             pickle.dump(blockchain2, f)
         
         return True 
-    except:
+    except Exception as e:
+        print(e)
         False
 
 
 def claim_credit(blockchain,user,quantity,proof):
-    for i in blockchain.chain:
-        if i.data['proof']==proof:
-            return False
-
+    # for i in blockchain.chain:
+    #     if i.data[-1]['proof']==proof:
+    #         return False
+    quantity = int(quantity)
     transaction(blockchain=blockchain,sender="admin",recipient=user,quantity= quantity,proof= proof)
     return True
 
 def convert_coin(blockchain1,blockchain2,user,amount):
     try:
+        amount = int(amount)
         transaction(blockchain=blockchain1,sender=user,recipient="admin",quantity= amount,proof="CONVERSION")
         transaction(blockchain=blockchain2,sender="admin",recipient=user,quantity= amount*RATIO,proof="CONVERSION")
         return True 
@@ -102,6 +105,11 @@ def get_balance(blockchain1,blockchain2,username):
         silver = -1
         
     return {COIN1:gold,COIN2:silver}
+
+def get_history(blockchain1,blockchain2,username):
+    list1 = []
+    list2 = []
+    pass
 
 
 if __name__=="__main__":

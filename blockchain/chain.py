@@ -34,9 +34,10 @@ class BlockChain:
         if self.coin ==COIN1:
             NEW_TOKEN_COUNT = NEW_TOKEN_COUNT_COIN1
         else:
-            INITIAL_TOKEN = NEW_TOKEN_COUNT_COIN2
+            NEW_TOKEN_COUNT = NEW_TOKEN_COUNT_COIN2
         if newuser:
             users[id] = 0
+            print(users)
             users["admin"]+= NEW_TOKEN_COUNT
         block = Block(
             index=len(self.chain),
