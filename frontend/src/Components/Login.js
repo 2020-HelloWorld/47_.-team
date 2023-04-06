@@ -35,7 +35,7 @@ function Login({setAuth: hasAuth, setAuthLoading: hasAuthLoading, ...props}) {
     return (
       <div>  
       <form onSubmit={handleLogin} className='glass-container login'>
-          <h3 className='brand-titl'>Metro AFC</h3>
+          <h3 className='brand-titl'>Ed-Cred</h3>
   
           <label className="inputLabel">Username</label>
           <input type="text" placeholder="Email or Phone" id="username" autoComplete="new-password" />
