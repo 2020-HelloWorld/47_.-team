@@ -34,7 +34,7 @@ function Login({setAuth: hasAuth, setAuthLoading: hasAuthLoading, ...props}) {
   
     return (
       <div>  
-      <form className='glass-container login'>
+      <form onSubmit={handleLogin} className='glass-container login'>
           <h3 className='brand-titl'>Metro AFC</h3>
   
           <label className="inputLabel">Username</label>
@@ -43,7 +43,7 @@ function Login({setAuth: hasAuth, setAuthLoading: hasAuthLoading, ...props}) {
           <label className="inputLabel">Password</label>
           <input type="password" placeholder="Password" id="password" autoComplete="new-password" />
           {error && <><small style={{ color: 'red' }}>{error}</small><br /></>}<br />
-          <input type="button" value={loading ? 'Loading...' : 'LOGIN'} onClick={handleLogin} disabled={loading} />
+          <input type="submit" value={loading ? 'Loading...' : 'LOGIN'}  disabled={loading} />
           
       </form>
       </div>
