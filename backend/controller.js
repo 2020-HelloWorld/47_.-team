@@ -1,6 +1,7 @@
+const config = require('config');
 const expressTypes = require("express");
 const operations = require('./operations');
-
+const BC_API = config.get('BC_API');
 function delay(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
@@ -108,10 +109,65 @@ const controller = {
     /** @type {expressTypes.Response} */ res
   ) => {
     let { username } = req.body;
-
+    const formData = new FormData();
+    formData.append('username', username);
+    let balance;
+    try{
+      balance = await axios.post(`${BC_API}/fetch/userbalance`, formData);
+      return res.json({ balance: balance.data });
+    }catch(err){
+      return res.status(400).json({ balance: null })
+    }
     
   },
-  
+  fetchHistory: async(
+    /** @type {expressTypes.Request} */ req,
+    /** @type {expressTypes.Response} */ res
+  ) => {
+    let { username } = req.body;
+    const formData = new FormData();
+    formData.append('username', username);
+    let history;
+    try{
+      history = await axios.post(`${BC_API}/fetch/history`, formData);
+      return res.json({ history: history.data });
+    }catch(err){
+      return res.status(400).json({ history: []})
+    }
+  },
+  createUser: async(
+    /** @type {expressTypes.Request} */ req,
+    /** @type {expressTypes.Response} */ res
+  ) => {
+    let { username } = req.body;
+    const formData = new FormData();
+    formData.append('username', username);
+    let resp;
+    try{
+      resp = await axios.post(`${BC_API}/create/user`, formData);
+      return res.json({ ok: resp.data.ok });
+    }catch(err){
+      return res.status(400).json({ ok: "error"})
+    }
+  },
+  claimCredits: async(
+    /** @type {expressTypes.Request} */ req,
+    /** @type {expressTypes.Response} */ res
+  ) => {
+    let { username, recipient, amount, token_type, doc_id } = req.body;
+    const formData = new FormData();
+    formData.append('recipient', username);
+    formData.append('amount', username);
+    formData.append('token_type', username);
+    formData.append('doc_id', username);
+    let resp;
+    try{
+      resp = await axios.post(`${BC_API}/claim/credits`, formData);
+      return res.json({ ok: resp.data.ok });
+    }catch(err){
+      return res.status(400).json({ ok: "error"})
+    }
+  },
 };
 
 // export the controller

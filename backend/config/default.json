@@ -1,5 +1,6 @@
 {
     "database": "mongodb://localhost:27017/edcred",
     "jwtTok": "EDCRED@123",
-    "port": 8000
+    "port": 8000,
+    "BC_API": "http://localhost:5000"
 }
