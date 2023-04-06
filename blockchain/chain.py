@@ -3,6 +3,10 @@ import time
 
 from block import Block
 
+
+INITIAL_TOKEN = 100
+NEW_TOKEN_COUNT = 10
+
 class BlockChain:
 
     def __init__(self):
@@ -14,10 +18,17 @@ class BlockChain:
     def construct_genesis(self):
         self.construct_block(proof_no=0, prev_hash=0)
 
-    def construct_block(self, proof_no, prev_hash):
+    def construct_block(self, proof_no, prev_hash,newuser=False,id=None):
         users = None
         if prev_hash !=0:
             users = self.latest_block.users
+        else:
+            users = {
+                "admin": INITIAL_TOKEN
+            }
+        if newuser:
+            users[id] = 0
+            users["admin"]+= NEW_TOKEN_COUNT
         block = Block(
             index=len(self.chain),
             proof_no=proof_no,
