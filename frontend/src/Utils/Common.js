@@ -5,7 +5,7 @@ export const getUser = () => {
     username: localStorage.getItem('username'),
     role: localStorage.getItem('role')
   }
-  if (localStorage.getItem('token')) return JSON.parse(userStr);
+  if (localStorage.getItem('token')) return userStr;
   else return null;
 }
 

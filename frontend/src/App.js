@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch } from "react-router-dom";
 import  { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -22,20 +22,20 @@ function App() {
       return;
     }
 
-    axios
-      .get(`${process.env.REACT_APP_HOST}/verifyToken?token=${token}`)
-      .then((response) => {
-        setUserSession(response.data.token, response.data.username, response.data.name);
-        setAuthLoading(false);
-        setAuth(true);
-      })
-      .catch((error) => {
-        if (error?.response?.status === 401 ) removeUserSession();
-        setAuthLoading(false);
-        setAuth(false);
-      });
-      return () => {
-      }
+    // axios
+    //   .get(`${process.env.REACT_APP_HOST}/verifyToken?token=${token}`)
+    //   .then((response) => {
+    //     setUserSession(response.data.token, response.data.username, response.data.name);
+    //     setAuthLoading(false);
+    //     setAuth(true);
+    //   })
+    //   .catch((error) => {
+    //     if (error?.response?.status === 401 ) removeUserSession();
+    //     setAuthLoading(false);
+    //     setAuth(false);
+    //   });
+    //   return () => {
+    //   }
   }, []);
 
   return (
@@ -69,6 +69,7 @@ function App() {
                 setAuth={setAuth}
                 setAuthLoading={setAuthLoading}
               />
+
             </Switch>
           </div>
         </div>
