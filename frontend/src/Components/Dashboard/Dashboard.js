@@ -4,7 +4,7 @@ import Student from './Student';
 import Admin from './Admin';
 import {  Redirect, Route, Switch } from 'react-router-dom';
 
-function Dashboard({auth, setAuth, authLoading, setAuthLoading}) {
+function Dashboard({ authLoading }) {
     const userRole = getUser()?.role
 
     if (authLoading && getToken()) {
