@@ -12,16 +12,11 @@ class BlockChain:
         self.construct_genesis()
 
     def construct_genesis(self):
-        
         self.construct_block(proof_no=0, prev_hash=0)
 
     def construct_block(self, proof_no, prev_hash):
-        if prev_hash ==0:
-            users = {
-                "A":10,
-                "B":5
-            }
-        else:
+        users = None
+        if prev_hash !=0:
             users = self.latest_block.users
         block = Block(
             index=len(self.chain),
@@ -31,7 +26,6 @@ class BlockChain:
             users=users
             )
         self.current_data = []
-
         self.chain.append(block)
         return block
 
@@ -43,8 +37,7 @@ class BlockChain:
         elif prev_block.calculate_hash != block.prev_hash:
             return False
 
-        elif not BlockChain.verifying_proof(block.proof_no,
-                                            prev_block.proof_no):
+        elif not BlockChain.verifying_proof(block.proof_no,prev_block.proof_no):
             return False
 
         elif block.timestamp <= prev_block.timestamp:
@@ -77,7 +70,6 @@ class BlockChain:
     @staticmethod
     def verifying_proof(last_proof, proof):
         #verifying the proof: does hash(last_proof, proof) contain 4 leading zeroes?
-
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
