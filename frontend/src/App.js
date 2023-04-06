@@ -40,7 +40,39 @@ function App() {
 
   return (
     <div className="App">
-      
+      <BrowserRouter>
+        <div>
+          <Navbar  auth={auth} 
+          setAuth={setAuth}
+          setAuthLoading={setAuthLoading}
+           />
+          <div className="content">
+            <Switch>
+              <PrivateRoute
+                exact
+                path="/"
+                component={Home}
+                setAuth={setAuth}
+                setAuthLoading={setAuthLoading}
+              />
+         
+              <PublicRoute
+                path="/login"
+                component={Login}
+                setAuth={setAuth}
+                setAuthLoading={setAuthLoading}
+              />
+
+              <PrivateRoute
+                path="/dashboard"
+                component={Dashboard}
+                setAuth={setAuth}
+                setAuthLoading={setAuthLoading}
+              />
+            </Switch>
+          </div>
+        </div>
+      </BrowserRouter>
     </div>
   );
 }
