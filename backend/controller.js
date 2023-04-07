@@ -2,6 +2,8 @@ const config = require('config');
 const expressTypes = require("express");
 const operations = require('./operations');
 const BC_API = config.get('BC_API');
+const FormData = require('form-data');
+const axios = require('axios');
 function delay(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
@@ -23,7 +25,7 @@ const controller = {
     next
   ) => {
     // await delay(1000);
-        var token =  req.query.token;
+        var token =  req.body.token;
   if (!token) {
     return res.status(400).json({
       error: true,
@@ -62,7 +64,7 @@ const controller = {
         message: "Invalid token."
     });
     }
-   
+   console.log(check.username)
     // get basic user details
     var userObj = await operations.getCleanUser(check.username);
     return res.json({ user: userObj, token });
@@ -112,10 +114,12 @@ const controller = {
     const formData = new FormData();
     formData.append('username', username);
     let balance;
+    console.log(1)
     try{
       balance = await axios.post(`${BC_API}/fetch/userbalance`, formData);
-      return res.json({ balance: balance.data });
+      return res.json( balance.data );
     }catch(err){
+      console.log(err)
       return res.status(400).json({ balance: null })
     }
     
@@ -192,11 +196,12 @@ const controller = {
   ) => {
     let { username, amount } = req.body;
     const formData = new FormData();
-    formData.append('recipient', username);
-    formData.append('amount', username);
+    formData.append('username', username);
+    formData.append('amount', amount);
     let resp;
     try{
       resp = await axios.post(`${BC_API}/convert/credits`, formData);
+      console.log(resp.data )
       return res.json({ ok: resp.data.ok });
     }catch(err){
       return res.status(400).json({ ok: "error"})
@@ -212,9 +217,25 @@ const controller = {
     let resp;
     try{
       resp = await operations.saveDoc({username, doc, description,status:'pending'});
-      return res.json({ ok: resp.data.ok });
+      return res.json({ ok: "success" });
     }catch(err){
+      console.log(err)
       return res.status(400).json({ ok: "error"})
+    }
+  },
+  fetchApprovalData: async(
+    /** @type {expressTypes.Request} */ req,
+    /** @type {expressTypes.Response} */ res
+  ) => {
+    let { username } = req.body;
+    
+    let resp;
+    try{
+      resp = await operations.approvalData({status:'pending'});
+      return res.json({ appData: resp });
+    }catch(err){
+      console.log(err)
+      return res.status(400).json({appData: []})
     }
   },
 };
