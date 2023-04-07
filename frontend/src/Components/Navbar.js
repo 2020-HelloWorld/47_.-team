@@ -20,13 +20,13 @@ function Navbar({auth, ...props }) {
       </ul>
       <ul>
         <li>
-          <a href="#">Profile</a>
+          <a href="/">Profile</a>
         </li>
         <li>
-          <a href="#">Freelance</a>
+          <a href="/">Freelance</a>
         </li>
         <li>
-          <a href="#">Claim</a>
+          <Link to="/claim">Claim</Link>
         </li>
         <li>
         <Link to="/" onClick={handleLogout} >Logout</Link>
@@ -40,13 +40,13 @@ function Navbar({auth, ...props }) {
       </ul>
       <ul>
         <li>
-          <a href="#">Profile</a>
+          <a href="/">Profile</a>
         </li>
         <li>
-          <a href="#">Freelance</a>
+          <a href="/">Freelance</a>
         </li>
         <li>
-          <a href="#">Claim</a>
+          <a href="/">Claim</a>
         </li>
         <li>
         <Link to="/" onClick={handleLogout} >Logout</Link>
