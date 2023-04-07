@@ -1,11 +1,12 @@
 import React from "react";
-import { getUser } from "../Utils/Common";
+import { getUser, removeUserSession } from "../Utils/Common";
+import { Link } from 'react-router-dom'
 import "./style.css";
 
 function Navbar({auth, ...props }) {
 
   const handleLogout = ()=>{
-    console.log(23)
+    removeUserSession()
   }
   return (
     <div className="central-body">
@@ -13,53 +14,45 @@ function Navbar({auth, ...props }) {
      <>
       {getUser().role==="student" ?
    
-    <div className="nav">
-        <div className="nav-header">
-          <div className="nav-title">
-            Ed-Cred
-          </div>
-        </div>
-        <div className="nav-btn">
-          <label htmlFor="nav-check">
-            <span></span>
-            <span></span>
-            <span></span>
-          </label>
-        </div>
-        
-        <div className="nav-links">
-            <a href="/" >Transact</a>
-        
-          <a href="/" >My profile</a>
-          <a href="/" >Contact </a>
-          <a href="/" onClick={handleLogout} >Logout</a>
-
-        </div>
-      </div>
+      <nav>
+      <ul>
+        Ed-Cred
+      </ul>
+      <ul>
+        <li>
+          <a href="#">Profile</a>
+        </li>
+        <li>
+          <a href="#">Freelance</a>
+        </li>
+        <li>
+          <a href="#">Claim</a>
+        </li>
+        <li>
+        <Link to="/" onClick={handleLogout} >Logout</Link>
+        </li>
+      </ul>
+    </nav>
       :
-      <div className="nav">
-        <div className="nav-header">
-          <div className="nav-title">
-            Ed-Cred
-          </div>
-        </div>
-        <div className="nav-btn">
-          <label htmlFor="nav-check">
-            <span></span>
-            <span></span>
-            <span></span>
-          </label>
-        </div>
-        
-        <div className="nav-links">
-            <a href="/" >AdminMenu1</a>
-        
-          <a href="/" >My profile</a>
-          <a href="/" >Contact </a>
-          <a href="/" >Logout</a>
-
-        </div>
-      </div>
+      <nav>
+      <ul>
+        Ed-Cred
+      </ul>
+      <ul>
+        <li>
+          <a href="#">Profile</a>
+        </li>
+        <li>
+          <a href="#">Freelance</a>
+        </li>
+        <li>
+          <a href="#">Claim</a>
+        </li>
+        <li>
+        <Link to="/" onClick={handleLogout} >Logout</Link>
+        </li>
+      </ul>
+    </nav>
      }
       </>
       :

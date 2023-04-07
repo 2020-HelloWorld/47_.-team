@@ -6,7 +6,15 @@ import '../Components/style.css';
 function Login({setAuth: hasAuth, setAuthLoading: hasAuthLoading, ...props}) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [activeForm, setActiveForm] = useState("login");
+
+    const switchToSignup = () => {
+      setActiveForm("signup");
+    };
   
+    const switchToLogin = () => {
+      setActiveForm("login");
+    };
     const isLogged = useCallback((val) => {
             hasAuthLoading(!val);
             hasAuth(val);
@@ -37,14 +45,12 @@ function Login({setAuth: hasAuth, setAuthLoading: hasAuthLoading, ...props}) {
   <div className="loader" />
 </div> </>;  }
   
-    return (
-      <div>  
-      
+  
 
-      <div className="container">
-      <div className="login-page">
+  return (
+    <div className="login-page">
       <div className="form-container">
-        <form className={`login-form active-form}`} onSubmit={handleLogin}>
+        <form className={`login-form ${activeForm === "login" ? "active-form" : ""}`} onSubmit={handleLogin}>
           <h1>Login</h1>
           <label>
             Username
@@ -52,17 +58,42 @@ function Login({setAuth: hasAuth, setAuthLoading: hasAuthLoading, ...props}) {
           </label>
           <label>
             Password
-            <input type="password"  id='password'/>
+            <input type="password" id='password'  />
           </label>
           {error && <><small style={{ color: 'red' }}>{error}</small><br /></>}<br />
-          <input type="submit" value={loading ? 'Loading...' : 'LOGIN'}  disabled={loading}  className="submit"/>
+          <button type="submit">Login</button>
+          <p>
+            Don't have an account yet?{" "}
+            <button type="button" onClick={switchToSignup}>
+              Sign up
+            </button>
+          </p>
         </form>
-        
+        <form className={`signup-form ${activeForm === "signup" ? "active-form" : ""}`} onSubmit={handleLogin}>
+          <h1>Sign Up</h1>
+          <label>
+            Username
+            <input type="text"  />
+          </label>
+          <label>
+            Email
+            <input type="email"  />
+          </label>
+          <label>
+            Password
+            <input type="password"  />
+          </label>
+          <button type="submit">Sign Up</button>
+          <p>
+            Already have an account?{" "}
+            <button type="button" onClick={switchToLogin}>
+              Login
+            </button>
+          </p>
+        </form>
       </div>
     </div>
-    </div>
-    </div>
-    );
+  );
 }
 
 export default Login
