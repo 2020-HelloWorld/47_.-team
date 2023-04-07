@@ -216,7 +216,7 @@ const controller = {
     
     let resp;
     try{
-      resp = await operations.saveDoc({username, doc, description, $G: null, $S: null ,status:'pending'});
+      resp = await operations.saveDoc({username, doc, description, dG: null, dS: null ,status:'pending'});
       return res.json({ ok: "success" });
     }catch(err){
       console.log(err)
@@ -246,8 +246,7 @@ const controller = {
 
       console.log(req.body)
       const { username,recipient,id,$G,$S,doc_id } = req.body;
-      
-      await operations.updateApproval({username: recipient, $G: $G, $S: $S, status: 'approved'},{_id: id});
+      await operations.updateApproval({username: recipient, "dG": $G, "dS": $S, status: 'approved'},{id:id});
       
       const formData1 = new FormData();
       formData1.append('recipient', recipient);

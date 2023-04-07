@@ -1,6 +1,7 @@
 const config = require('config');
 const jwt = require('jsonwebtoken');
 const MongoClient = require('mongodb').MongoClient
+const ObjectId = require('mongodb').ObjectId
 let ConnectionURL = config.get('database');
 // generate token and return it
 function generateToken(user) {
@@ -149,7 +150,7 @@ async function updateApproval(data,query) {
    try {
     db = client.db('edcred')
     var newvalues = { $set: data };
-    console.log(await db.collection("sessions").updateOne(query,newvalues))
+    console.log(await db.collection("resources").updateOne({"_id": new ObjectId(query.id)},newvalues))
    } catch (err) {
     throw err
    } finally {
