@@ -16,6 +16,6 @@ router.post('/claim/credits', controller.isLoggedIn, controller.claimCredits);
 router.post('/convert/credits', controller.isLoggedIn, controller.convertCredits);
 router.post('/initiate/transaction', controller.isLoggedIn, controller.intiateTransaction);
 
-
+router.post('/upload/doc', controller.isLoggedIn, controller.uploadDetails);
 // export the routes
 module.exports = router;

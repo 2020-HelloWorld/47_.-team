@@ -108,6 +108,24 @@ async function fetchDetails(data){
     return null
 }
 
+//upload details of Doc
+async function saveDoc(data){
+  this.res=[]
+  const client = await  MongoClient.connect(ConnectionURL)
+   try {
+    db = client.db('edcred')
+    res = await db.collection("resources").insertOne(data);
+   } catch (err) {
+    throw err
+   } finally {
+     client.close()
+   }
+   if (res[0])
+    return res[0]
+  else
+    return null
+}
+
 
 module.exports = {
   generateToken,
@@ -116,5 +134,5 @@ module.exports = {
   checkUser,
   storeTok,
   fetchDetails,
-
+  saveDoc
 }

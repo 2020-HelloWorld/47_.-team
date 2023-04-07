@@ -202,6 +202,21 @@ const controller = {
       return res.status(400).json({ ok: "error"})
     }
   },
+
+  uploadDetails: async(
+    /** @type {expressTypes.Request} */ req,
+    /** @type {expressTypes.Response} */ res
+  ) => {
+    let { username, doc, description } = req.body;
+    
+    let resp;
+    try{
+      resp = await operations.saveDoc({username, doc, description,status:'pending'});
+      return res.json({ ok: resp.data.ok });
+    }catch(err){
+      return res.status(400).json({ ok: "error"})
+    }
+  },
 };
 
 // export the controller
