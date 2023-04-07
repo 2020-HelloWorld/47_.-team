@@ -1,8 +1,13 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
+import { getToken, removeUserSession } from "../../Utils/Common";
+import axios from "axios";
 
 function ApprovalTable() {
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(null);
+    const [appList , setAppList] = useState(null)
+
   // Set up some initial data
   const initialData = [
     {
@@ -28,24 +33,61 @@ function ApprovalTable() {
 
   // Handle changes to text input
   const handleTextChange = (event, index) => {
-    const newData = [...data];
-    newData[index].text = event.target.value;
+    const newData = [...appList];
+    newData[index].$G = event.target.value;
     setData(newData);
   };
 
   // Handle changes to number input
   const handleNumberChange = (event, index) => {
-    const newData = [...data];
-    newData[index].number = event.target.value;
+    const newData = [...appList];
+    newData[index].$S = event.target.value;
     setData(newData);
   };
 
   // Handle approve button click
-  const handleApproveClick = (index) => {
-    const newData = [...data];
-    newData[index].approved = true;
-    setData(newData);
+  const handleApproveClick = (index,id) => {
+    const newData = [...appList];
+    
+    axios
+      .post(`${process.env.REACT_APP_HOST}/approve/application`, {token: getToken(), id: id, $G: newData[index].$G, $S:newData[index].$S , doc_id: newData[index].doc, recipient:newData[index].username})
+      .then((response) => {
+        newData[index].status = 'accepted';
+        setData(newData);
+      })
+      .catch((error) => {
+        if (error?.response?.status === 401 ) removeUserSession();
+        setAppList( null );
+      });
+      return () => {
+      }
   };
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      return;
+    }
+    setLoading(true)
+    axios
+      .post(`${process.env.REACT_APP_HOST}/fetch/approvaldata`, {token: getToken()})
+      .then((response) => {
+        setLoading(false);
+        setAppList( response.data.appData );
+      })
+      .catch((error) => {
+        if (error?.response?.status === 401 ) removeUserSession();
+        setLoading(false);
+        setAppList( null );
+      });
+      return () => {
+      }
+  }, []);
+
+if (loading && getToken()) {
+  return <> <div className="container">
+<div className="loader" />
+</div> </>;   }
 
   return (
     <table className="table">
@@ -54,20 +96,20 @@ function ApprovalTable() {
           <th>Username</th>
           <th>Description</th>
           <th>Document ID</th>
-          <th>Text</th>
-          <th>Number</th>
+          <th>$G</th>
+          <th>$S</th>
           <th>Approve</th>
         </tr>
       </thead>
       <tbody>
-        {data.map((item, index) => (
+        {appList && appList.map((item, index) => (
           <tr key={index}>
             <td>{item.username}</td>
             <td>{item.description}</td>
-            <td>{item.document_id}</td>
+            <td>{item.doc}</td>
             <td>
               <input
-                type="text"
+                type="number"
                 value={item.text}
                 onChange={(event) => handleTextChange(event, index)}
               />
@@ -80,9 +122,9 @@ function ApprovalTable() {
               />
             </td>
             <td>
-              {!item.approved && (
-                <button onClick={() => handleApproveClick(index)}>
-                  Approve
+              {item.status==="pending" && (
+                <button onClick={() => handleApproveClick(index,item._id)}>
+                  Approved
                 </button>
               )}
             </td>
@@ -91,6 +133,6 @@ function ApprovalTable() {
       </tbody>
     </table>
   );
-}
 
+              }
 export default ApprovalTable;
