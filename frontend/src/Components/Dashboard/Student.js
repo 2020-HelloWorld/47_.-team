@@ -1,9 +1,10 @@
 import React from 'react'
-import { Redirect } from 'react-router-dom';
-import { getUser,getToken,removeUserSession, setUserSession } from '../../Utils/Common';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { getUser,getToken,removeUserSession } from '../../Utils/Common';
 import { useState,useEffect } from 'react';
 import axios from 'axios';
 import TransactionTable from '../TransactionsTable';
+import Claimcredits from './Claimcredits';
 
 
 function Student() {
@@ -67,9 +68,13 @@ function Student() {
       return <Redirect to={{ pathname: '/dashboard/admin' }} />
   }
   if (loading && getToken()) {
-    return <>Loading</>;  }
+    return <> <div className="container">
+  <div className="loader" />
+</div> </>;   }
   return (
-    <div className="profile-container">
+    <Switch>
+        <Route exact path="/dashboard/student">
+        <div className="profile-container">
       <h1>Profile Page</h1>
       <p>Name: {user.name}</p>
       <p>SRN: {user.username}</p>
@@ -89,6 +94,12 @@ function Student() {
       <button onClick={handlePrintTransactions}>Print Transactions</button>
       {history && <TransactionTable transactions={history} />}
     </div>
+        </Route>
+        <Route path="/dashboard/student/claim">
+          <Claimcredits />
+        </Route>
+      </Switch>
+    
   )
 }
 

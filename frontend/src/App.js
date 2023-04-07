@@ -38,8 +38,11 @@ function App() {
       }
   }, []);
 
+
   if (authLoading && getToken()) {
-    return <>Loading</>;  }
+    return <> <div className="container">
+  <div className="loader" />
+</div> </>;   }
 
   return (
     <div className="App">

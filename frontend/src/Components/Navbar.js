@@ -26,7 +26,7 @@ function Navbar({auth, ...props }) {
           <a href="/">Freelance</a>
         </li>
         <li>
-          <Link to="/claim">Claim</Link>
+          <Link to="/dashboard/student/claim">Claim</Link>
         </li>
         <li>
         <Link to="/" onClick={handleLogout} >Logout</Link>
