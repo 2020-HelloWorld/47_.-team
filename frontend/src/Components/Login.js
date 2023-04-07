@@ -6,20 +6,6 @@ import '../Components/style.css';
 function Login({setAuth: hasAuth, setAuthLoading: hasAuthLoading, ...props}) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [isSignIn, setIsSignIn] = useState(true);
-    const [activeForm, setActiveForm] = useState("login");
-
-  const switchToSignup = () => {
-    setActiveForm("signup");
-  };
-
-  const switchToLogin = () => {
-    setActiveForm("login");
-  };
-
-  const handleToggleForm = () => {
-    setIsSignIn(!isSignIn);
-  };
   
     const isLogged = useCallback((val) => {
             hasAuthLoading(!val);
@@ -35,14 +21,14 @@ function Login({setAuth: hasAuth, setAuthLoading: hasAuthLoading, ...props}) {
       // console.log(e.target);
       axios.post(`${process.env.REACT_APP_HOST}/login`, { username: e.target.username.value, password: e.target.password.value }).then(response => {
         setLoading(false);
-
-        setUserSession(response.data?.token, response.data?.username, response.data?.name);
+        setUserSession(response.data?.token, response.data?.user.username, response.data?.user.name,response.data?.user.role);
         isLogged(true)
         props.history.push('/dashboard');
       }).catch(error => {
         setLoading(false);
         console.log(error.response?.data)
-        if (error.response?.status === 401) setError(error.response?.data.error);
+        console.log(error.response?.data.error)
+        if (error.response?.status === 401) setError(error.response?.data.message);
         else setError("Something went wrong. Please try again later.");
       });
     }
@@ -58,7 +44,7 @@ function Login({setAuth: hasAuth, setAuthLoading: hasAuthLoading, ...props}) {
       <div className="container">
       <div className="login-page">
       <div className="form-container">
-        <form className={`login-form active-form}`}>
+        <form className={`login-form active-form}`} onSubmit={handleLogin}>
           <h1>Login</h1>
           <label>
             Username

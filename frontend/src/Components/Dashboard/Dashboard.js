@@ -11,7 +11,7 @@ function Dashboard({ authLoading }) {
         return <>Loading</>;  }
   return (
     <>
-    <div>Dashboard</div>
+    {/* <div>Dashboard</div> */}
     <Switch>
         <Route exact path="/dashboard">
           {userRole === 'admin' ? (

@@ -25,7 +25,7 @@ function App() {
     axios
       .get(`${process.env.REACT_APP_HOST}/verifyToken?token=${token}`)
       .then((response) => {
-        setUserSession(response.data.token, response.data.username, response.data.name);
+        setUserSession(response.data?.token, response.data?.user.username, response.data?.user.name, response.data?.user.role);
         setAuthLoading(false);
         setAuth(true);
       })
