@@ -216,7 +216,7 @@ const controller = {
     
     let resp;
     try{
-      resp = await operations.saveDoc({username, doc, description,status:'pending'});
+      resp = await operations.saveDoc({username, doc, description, $G: null, $S: null ,status:'pending'});
       return res.json({ ok: "success" });
     }catch(err){
       console.log(err)
@@ -238,9 +238,41 @@ const controller = {
       return res.status(400).json({appData: []})
     }
   },
+  appApproval: async (
+    /** @type {expressTypes.Request} */ req,
+    /** @type {expressTypes.Response} */ res
+  ) => {
+    try{
+
+      console.log(req.body)
+      const { username,recipient,id,$G,$S,doc_id } = req.body;
+      
+      await operations.updateApproval({username: recipient, $G: $G, $S: $S, status: 'approved'},{_id: id});
+      
+      const formData1 = new FormData();
+      formData1.append('recipient', recipient);
+      formData1.append('token_type', "$G");
+      formData1.append('amount', $G);
+      formData1.append('doc_id', doc_id);
+      await axios.post(`${BC_API}/claim/credits`, formData1);
+
+      const formData2 = new FormData();
+      formData2.append('recipient', recipient);
+      formData2.append('amount', $S);
+      formData2.append('token_type', "$S");
+      formData2.append('doc_id', doc_id);
+      await axios.post(`${BC_API}/claim/credits`, formData2);
+
+      // return the token along with user details
+      return res.json({ ok: "success" });
+    }catch(err){
+      console.log(err)
+      return res.status(400).json({ ok: "error" });
+    }
+
+  },
 };
 
 // export the controller
 module.exports = controller;
 
-// select cast(substring_index ("-7,0",',',1) AS int)+5 AS STRING;

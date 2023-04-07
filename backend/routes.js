@@ -18,5 +18,6 @@ router.post('/initiate/transaction', controller.isLoggedIn, controller.intiateTr
 
 router.post('/upload/doc', controller.isLoggedIn, controller.uploadDetails);
 router.post('/fetch/approvaldata', controller.isLoggedIn, controller.fetchApprovalData);
+router.post('/approve/application', controller.isLoggedIn, controller.appApproval);
 // export the routes
 module.exports = router;

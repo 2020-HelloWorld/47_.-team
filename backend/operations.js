@@ -94,20 +94,20 @@ async function storeTok(token,username) {
 async function fetchDetails(data){
   this.res=[]
   const client = await  MongoClient.connect(ConnectionURL)
-   try {
+  try {
     db = client.db('edcred')
     res = await db.collection("users").find(data).toArray();
    } catch (err) {
-    throw err
-   } finally {
-     client.close()
+     throw err
+    } finally {
+      client.close()
    }
    if (res[0])
-    return res[0]
+   return res[0]
   else
     return null
-}
-
+  }
+  
 //upload details of Doc
 async function saveDoc(data){
   this.res=[]
@@ -115,7 +115,7 @@ async function saveDoc(data){
    try {
     db = client.db('edcred')
     res = await db.collection("resources").insertOne(data);
-   } catch (err) {
+  } catch (err) {
     throw err
    } finally {
      client.close()
@@ -129,20 +129,33 @@ async function saveDoc(data){
 async function approvalData(data){
   this.res=[]
   const client = await  MongoClient.connect(ConnectionURL)
-   try {
+  try {
     db = client.db('edcred')
     res = await db.collection("resources").find(data).toArray();
-   } catch (err) {
+  } catch (err) {
     throw err
-   } finally {
+  } finally {
      client.close()
    }
    if (res)
     return res
   else
-    return null
+  return null
 }
 
+async function updateApproval(data,query) {
+  this.res=[]
+    const client = await  MongoClient.connect(ConnectionURL)
+   try {
+    db = client.db('edcred')
+    var newvalues = { $set: data };
+    console.log(await db.collection("sessions").updateOne(query,newvalues))
+   } catch (err) {
+    throw err
+   } finally {
+     client.close()
+   }
+}
 
 module.exports = {
   generateToken,
@@ -152,5 +165,6 @@ module.exports = {
   storeTok,
   fetchDetails,
   saveDoc,
-  approvalData
+  approvalData,
+  updateApproval
 }
