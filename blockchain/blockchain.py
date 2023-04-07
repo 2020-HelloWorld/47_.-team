@@ -27,6 +27,10 @@ def transaction(blockchain,sender,recipient,quantity,proof="TRANSACTION"):
     try:
         quantity = int(quantity)
         last_block = blockchain.latest_block
+
+        if quantity>last_block.users[sender]:
+            return False
+
         last_proof_no = last_block.proof_no
         proof_no = blockchain.proof_of_work(last_proof_no)
 
@@ -52,7 +56,7 @@ def transaction(blockchain,sender,recipient,quantity,proof="TRANSACTION"):
         return True 
     
     except:
-        False
+        return False
 
 def new_user(blockchain1,blockchain2,id):
     try:
@@ -76,7 +80,7 @@ def new_user(blockchain1,blockchain2,id):
         return True 
     except Exception as e:
         print(e)
-        False
+        return False
 
 
 def claim_credit(blockchain,user,quantity,proof):
@@ -91,11 +95,15 @@ def claim_credit(blockchain,user,quantity,proof):
 def convert_coin(blockchain1,blockchain2,user,amount):
     try:
         amount = int(amount)
+        last_block = blockchain1.latest_block
+        if amount>last_block.users[user]:
+            return False
+        
         transaction(blockchain=blockchain1,sender=user,recipient="admin",quantity= amount,proof="CONVERSION")
         transaction(blockchain=blockchain2,sender="admin",recipient=user,quantity= amount*RATIO,proof="CONVERSION")
         return True 
     except:
-        False
+        return False
 
 def get_balance(blockchain1,blockchain2,username):
     try:
