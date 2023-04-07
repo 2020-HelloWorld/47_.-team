@@ -137,8 +137,8 @@ async function approvalData(data){
    } finally {
      client.close()
    }
-   if (res[0])
-    return res[0]
+   if (res)
+    return res
   else
     return null
 }
