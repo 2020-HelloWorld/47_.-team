@@ -51,7 +51,7 @@ function App() {
            />
           <div className="content">
             <Switch>
-              <PrivateRoute
+              <PublicRoute
                 exact
                 path="/"
                 component={Home}
