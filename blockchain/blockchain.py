@@ -28,7 +28,7 @@ def transaction(blockchain,sender,recipient,quantity,proof="TRANSACTION"):
         quantity = int(quantity)
         last_block = blockchain.latest_block
 
-        if quantity>last_block.users[sender]:
+        if quantity<=0 or quantity>last_block.users[sender]:
             return False
 
         last_proof_no = last_block.proof_no
