@@ -36,22 +36,22 @@ To use technology to the best extent in order to make educational a fun task rat
 
 
 
-## Installation
-### Clone the repository
-<code>git clone https://github.com/2020-HelloWorld/EducationalCreditSystem.git</code>\
+### Installation
+#### Clone the repository
+#### <code>git clone https://github.com/2020-HelloWorld/EducationalCreditSystem.git</code>
 
-### run <code>npm i</code> in both backend and frontend folders to download dependencies
+#### run <code>npm i</code> in both backend and frontend folders to download dependencies
 
-### run <code>pip install -r requirements.txt</code> in blockchain folder to install python modules
+#### run <code>pip install -r requirements.txt</code> in blockchain folder to install python modules
 
-### The system is running on localhost - Modify backend/config/default.jason and frontend/.env
+#### The system is running on localhost - Modify backend/config/default.jason and frontend/.env
 
-### Use node version 16.18.0 - Configure it using NVM ([Node Version Manager](https://github.com/coreybutler/nvm-windows))
+#### Use node version 16.18.0 - Configure it using NVM ([Node Version Manager](https://github.com/coreybutler/nvm-windows))
 
-### For database install Mongo-compass and mongo-server and create three collections in **edcred** database.
-### The collections are:
+#### For database install Mongo-compass and mongo-server and create three collections in **edcred** database.
+#### The collections are:
 - resources
 - sessions
 - users
-### Now import the files from backend/database into the mongodb
+#### Now import the files from backend/database into the mongodb
 
