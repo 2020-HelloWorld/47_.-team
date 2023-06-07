@@ -1,35 +1,16 @@
 import hashlib
 import time
 
-class Block:
-
-    def __init__(self, index, proof_no, prev_hash, data, timestamp=None, users = None):
+class Block(object):
+    def __init__(self, index, proof_number, previous_hash, data, timestamp=None):
         self.index = index
-        self.proof_no = proof_no
-        self.prev_hash = prev_hash
+        self.proof_number = proof_number
+        self.previous_hash = previous_hash
         self.data = data
         self.timestamp = timestamp or time.time()
-        self.users = users or dict()
-        self.update_user()
-        
-        
     @property
-    def calculate_hash(self):
-        block_of_string = "{}{}{}{}{}".format(self.index, self.proof_no,
-                                              self.prev_hash, self.data,
-                                              self.timestamp)
-
-        return hashlib.sha256(block_of_string.encode()).hexdigest()
-
+    def compute_hash(self):
+        string_block = "{}{}{}{}{}".format(self.index, self.proof_number, self.previous_hash, self.data, self.timestamp)
+        return hashlib.sha256(string_block.encode()).hexdigest()
     def __repr__(self):
-        return "{} - {} - {} - {} - {}".format(self.index, self.proof_no,
-                                               self.prev_hash, self.data,
-                                               self.timestamp)
-    def update_user(self):
-        for transaction in self.data:
-            coin = transaction['quantity']
-            sender = transaction['sender']
-            recipient = transaction['recipient']
-
-            self.users[sender] -= coin 
-            self.users[recipient] += coin 
+        return "{} - {} - {} - {} - {}".format(self.index, self.proof_number, self.previous_hash, self.data, self.timestamp)
