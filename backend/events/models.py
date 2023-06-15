@@ -8,7 +8,7 @@ class event(models.Model):
     name = models.CharField(max_length=25)
     date = models.DateField()
     club = models.ForeignKey(club,on_delete=models.CASCADE)
-    details =  models.CharField(max_length=1000)
+    details =  models.CharField(max_length=250)
 
 class participant(models.Model):
     id = models.AutoField(primary_key=True)
@@ -19,8 +19,9 @@ class winner(models.Model):
     id = models.OneToOneField(participant,primary_key=True,on_delete=models.CASCADE)
     position = models.IntegerField(null=False)
     
-class image(models.Model):
+class report(models.Model):
     id = models.AutoField(primary_key=True)
+    details = models.CharField(max_length=1000)
     img = models.ImageField(upload_to="uploads")
 
 class organizer(models.Model):

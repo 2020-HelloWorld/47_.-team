@@ -29,10 +29,6 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://*'
-]
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    "django_extensions",
     #User defined apps    
     'events.apps.EventsConfig',
     'home.apps.HomeConfig',
@@ -135,6 +132,33 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# CROSS ORIGIN REQUEST SETTINGS
+
+CORS_ORIGIN_WHITELIST = [ 'http://*','https://*'  ]
+
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_PATH = '/'
+
+SESSION_COOKIE_DOMAIN = None
+
+
+# CSRF_TRUSTED_ORIGINS = [
+#     'http://*',
+#     'https://*' 
+# ]
+
+# CSRF_COOKIE_HTTPONLY = False
+# CSRF_COOKIE_SAMESITE = None
+# CSRF_COOKIE_DOMAIN = None
+
+
+
+
 
 
