@@ -19,7 +19,10 @@ def login_api(request):
         # Authentication successful
         login(request, user) 
         groups = user.groups.all()         
-        return JsonResponse({'group': f'{groups[0]}','message':'Login Successful'})     
+        response =  JsonResponse({'group': f'{groups[0]}','message':'Login Successful'})   
+        # response.set_cookie("hehe","hello",samesite='None',secure=True)  
+        # print(response.cookies)
+        return response   
     else:
         # Authentication failed
         return JsonResponse({'message': 'Login failed'}, status=401)
@@ -38,12 +41,12 @@ def logout_api(request):
     return HttpResponse("User logged out")
 
 
-def cookie_test(request):
-    res = HttpResponse()
-    res.set_cookie('data','Cookie-Information')
-    cookie_data = request.COOKIES.get('data')
-    if cookie_data==None:
-        cookie_data = "Reload to get Cookie Data"
-    res.content = f'{cookie_data}'
-    return res
+# def cookie_test(request):
+#     res = HttpResponse()
+#     res.set_cookie('data','Cookie-Information')
+#     cookie_data = request.COOKIES.get('data')
+#     if cookie_data==None:
+#         cookie_data = "Reload to get Cookie Data"
+#     res.content = f'{cookie_data}'
+#     return res
 
