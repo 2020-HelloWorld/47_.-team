@@ -29,13 +29,14 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:3000',  # Replace with the URL of your ReactJS client
-#     'http://127.0.0.1:3000',  # If using localhost with IP address
-#     'https://286a-2401-4900-61b6-f711-c0d7-5101-9d5e-1242.ngrok-free.app',# Replace with your ngrok URL
-# ]
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',  # Replace with the URL of your ReactJS client
+    'http://127.0.0.1:3000',  # If using localhost with IP address
+    'https://f2b0-2401-4900-61c6-f7d4-c4ab-c401-7f76-1dfb.ngrok-free.app',# Replace with your ngrok URL
+]
+CORS_ORIGIN_ALLOW_ALL = False
 # Application definition
-CORS_ORIGIN_ALLOW_ALL = True
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -141,7 +142,29 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CROSS ORIGIN REQUEST SETTINGS
 
-CORS_ORIGIN_WHITELIST = [ 'http://*','https://*'  ]
+CORS_ORIGIN_WHITELIST = [ 
+    'http://localhost:3000',  # Replace with the URL of your ReactJS client
+    'http://127.0.0.1:3000',  # If using localhost with IP address
+    'https://f2b0-2401-4900-61c6-f7d4-c4ab-c401-7f76-1dfb.ngrok-free.app',# Replace with your ngrok URL
+]
+
+CORS_ALLOW_HEADERS = [
+    'Accept',
+    'Accept-Encoding',
+    'Authorization',
+    'Content-Type',
+    'Cookie',  # Add 'Cookie' header to allow
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers'
+]
+
+CORS_ALLOWED_METHODS = [
+    'GET',
+    'POST',
+    'OPTIONS',
+    # Add other allowed methods as needed
+]
 
 
 CORS_ALLOW_CREDENTIALS = True
@@ -151,6 +174,7 @@ SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_PATH = '/'
 SESSION_COOKIE_DOMAIN = "None"
+
 
 
 # CSRF_TRUSTED_ORIGINS = [
