@@ -5,7 +5,7 @@ import json
 class ProxyHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         # Specify the target server and path
-        target_host = 'f2b0-2401-4900-61c6-f7d4-c4ab-c401-7f76-1dfb.ngrok-free.app'
+        target_host = '6be8-2401-4900-61c6-f7d4-4c49-366b-fb89-88d9.ngrok-free.app'
         target_path = self.path
 
         # Create a connection to the target server
@@ -27,7 +27,7 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
 
         # Set the CORS headers
         self.send_response(response.status)
-        self.send_header('Access-Control-Allow-Origin', 'http://localhost:3000')
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.send_header('Access-Control-Allow-Credentials', 'true')
@@ -53,7 +53,7 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         # Set the CORS headers for the OPTIONS request
         self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', 'http://localhost:3000')
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.send_header('Access-Control-Allow-Credentials', 'true')
@@ -62,7 +62,7 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
     
     def do_POST(self):
         # Specify the target server and path
-        target_host = 'f2b0-2401-4900-61c6-f7d4-c4ab-c401-7f76-1dfb.ngrok-free.app'
+        target_host = '6be8-2401-4900-61c6-f7d4-4c49-366b-fb89-88d9.ngrok-free.app'
         target_path = self.path
 
         # Extract the POST data from the request
@@ -92,7 +92,7 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
         
         # Set the CORS headers
         self.send_response(response.status)
-        self.send_header('Access-Control-Allow-Origin', 'http://localhost:3000')
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.send_header('Access-Control-Allow-Credentials', 'true')
