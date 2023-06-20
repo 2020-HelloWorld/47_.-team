@@ -1,0 +1,50 @@
+.org-committee-container {
+    width: 100%;
+    padding: 20px;
+    background-color: #1c2331;
+    color: white;
+  }
+  
+  .org-committee-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .org-committee-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .org-committee-table th,
+  .org-committee-table td {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .org-committee-table th {
+    background-color: #253040;
+    color: white;
+  }
+  
+  .org-committee-table tr:nth-child(even) {
+    background-color: #36435c;
+  }
+  
+  .org-committee-table tr:hover {
+    background-color: #2c384d;
+  }
+  
+  .search-container {
+    text-align: right;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar {
+    padding: 8px;
+    border-radius: 4px;
+    border: none;
+    width: 300px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  

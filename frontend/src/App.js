@@ -15,6 +15,8 @@ import ClubList from './ClubList';
 import ClubEventList from './ClubEventList';
 import AddEvent from './AddEvent';
 import Load from './Load';
+import Participants from './Participants';
+import OrgCommittee from './OrgCommittee';
 
 
 
@@ -56,6 +58,10 @@ const App = () => {
         <Route path="/ClubEventList" component = {ClubEventList} />
 
         <Route path="/AddEvent" component = {AddEvent} />
+
+        <Route path="/Participants" component = {Participants}/>
+
+        <Route path = "/OrgCommittee" component = {OrgCommittee}/>
 
 
 

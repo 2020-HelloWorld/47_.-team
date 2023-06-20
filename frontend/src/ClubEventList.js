@@ -1,16 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './ClubEventList.css';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 const ClubEventList = () => {
+  const [modifyButtonVisible, setModifyButtonVisible] = useState(false);
+  const [participantButtonVisible, setParticipantButtonVisible] = useState(false);
+  const [facultyButtonVisible, setFacultyButtonVisible] = useState(false);
+  const [addEventButtonVisible, setAddEventButtonVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const history = useHistory();
   const handleAddEvent = () => {
-    // Navigate to the "Login" page
     history.push('/AddEvent');
     window.location.reload();
   };
 
+  const handleEventDetails = () => {
+    history.push('/EventDetails');
+    window.location.reload();
+  };
+
+  const handleParticipants = () => {
+    history.push('/Participants');
+    window.location.reload();
+  };
+
+  const handleOrgCommittee = () => {
+    history.push('/OrgCommittee');
+    window.location.reload();
+  };
 
   const eventList = [
     {
@@ -36,11 +55,63 @@ const ClubEventList = () => {
     },
   ];
 
- 
+  useEffect(() => {
+    const jsonData = {
+      cookies: document.cookie,
+    };
+
+    axios
+      .post('https://9f74-223-237-192-186.ngrok-free.app/auth', jsonData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => {
+        console.log(response);
+
+        if (response.status === 200) {
+          console.log('verified');
+          if (response.data['group'] === 'clubs') {
+            setModifyButtonVisible(true);
+            setAddEventButtonVisible(true);
+            setParticipantButtonVisible(true);
+            setFacultyButtonVisible(true);
+          } else if (
+            response.data['group'] === 'faculties' ||
+            response.data['group'] === 'student'
+          ) {
+            setParticipantButtonVisible(true);
+          }
+          if (response.data['group'] === 'faculty') {
+            setFacultyButtonVisible(true);
+          }
+        } else {
+          console.log('not verified');
+        }
+      });
+  }, []);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredEventList = eventList.filter((event) =>
+    event.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="clubeventlist-container">
       <h2 className="clubeventlist-title">Club Event List</h2>
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search by event name..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="search-bar"
+        />
+      </div>
       <table className="clubeventlist-table">
         <thead>
           <tr>
@@ -53,27 +124,45 @@ const ClubEventList = () => {
           </tr>
         </thead>
         <tbody>
-          {eventList.map((event) => (
+          {filteredEventList.map((event) => (
             <tr key={event.id}>
-              <td>{event.name}</td>
+              <td>
+                <button onClick={handleEventDetails} className="ButtonStyle">
+                  {event.name}
+                </button>
+              </td>
               <td>{event.date}</td>
               <td>{event.status}</td>
               <td>{event.type}</td>
               <td>
-                <button className="ButtonStyle">Participants</button>
+                {participantButtonVisible && (
+                  <button onClick={handleParticipants} className="ButtonStyle">
+                    Participants
+                  </button>
+                )}
               </td>
               <td>
-                <button className="ButtonStyle">Organising Committee</button>
+                {facultyButtonVisible && (
+                  <button onClick={handleOrgCommittee} className="ButtonStyle">
+                    Organising Committee
+                  </button>
+                )}
               </td>
               <td>
-                <button className="ButtonStyle">Modify</button>
+                {modifyButtonVisible && (
+                  <button className="ButtonStyle">Modify</button>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
       <div className="add-event-container">
-        <button onClick={handleAddEvent} className="ButtonStyle">Add Event</button>
+        {addEventButtonVisible && (
+          <button onClick={handleAddEvent} className="ButtonStyle">
+            Add Event
+          </button>
+        )}
       </div>
     </div>
   );

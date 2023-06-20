@@ -36,7 +36,7 @@ const Login = () => {
       const jsonData = {
         id: username,
         passwd: password,
-        type:"login"
+        //type:"login"
       };
   
       axios.post('http://192.168.156.204:4000/login', jsonData, {

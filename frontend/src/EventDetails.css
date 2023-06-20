@@ -1,14 +1,86 @@
-.welcome-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #121212;
-  }
-  
-  .welcome-text {
-    font-size: 48px;
-    color: #ffffff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  }
-  
+.event-details-container {
+  width: 100%;
+  padding: 20px;
+  background-color: #1c2331;
+  color: white;
+}
+
+.event-details-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.event-details-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #253040;
+  color: white;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.event-details-info {
+  flex: 1;
+}
+
+.event-details-winners {
+  flex: 1;
+}
+
+.event-details-winners h3 {
+  margin-bottom: 10px;
+}
+
+.event-details-winners ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.event-details-winners li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.winner-position {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.winner-name {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.winner-prize {
+  font-weight: bold;
+}
+
+.event-details-upload {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.event-details-upload h3 {
+  margin-right: 10px;
+}
+
+.ButtonStyle {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #000000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.ButtonStyle:hover {
+  background-color: #ff0000;
+}
