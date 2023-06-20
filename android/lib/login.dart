@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,22 +12,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _idController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  String? cookies = "";
   Future<void> _login() async {
-    final url = Uri.parse('http://192.168.156.204:4000/login');
+    final url = Uri.parse(dotenv.env['SERVER']!+'/proxy/login');
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({
       'id': _idController.text,
       'passwd': _passwordController.text,
-      'prev' : cookies,
     });
-    try{
-      final sharedPreferences = await SharedPreferences.getInstance();
-      cookies = sharedPreferences.getString('cookie');
-    } catch(e){
-      print("Error Retriving Cookie");
-    }
-
 
     try {
       final response = await http.post(url, headers: headers, body: body);
@@ -37,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
         final sharedPreferences = await SharedPreferences.getInstance();
         await sharedPreferences.setString('cookie', cookies);
         print(response.body);
+        Navigator.pushNamed(context, '/home');
       } else {
         // Login failed, handle the error
         print('Error: ${response.statusCode}');

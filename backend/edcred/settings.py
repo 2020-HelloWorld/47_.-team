@@ -25,14 +25,29 @@ SECRET_KEY = 'django-insecure-828^sbusw-yvqa3xya$pd6)=^f$n1#5db%bdwanxd29)is*jtz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Reading Configuration File
+config = {}
+try:
+    with open('./config.conf') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#'):  # Ignore empty lines and comments
+                key, value = line.split('=', 1)
+                config[key.strip()] = value.strip()
+except:
+    pass
+
 ALLOWED_HOSTS = [
-    '*'
+    # Removing http:// and https:// from host names
+    config['NGROK'].split("//")[1],  
+    config['FLUTTER_WEB'].split("//")[1],
+    config['REACT_WEB'].split("//")[1],
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  # Replace with the URL of your ReactJS client
-    'http://127.0.0.1:3000',  # If using localhost with IP address
-    'https://9f74-223-237-192-186.ngrok-free.app',# Replace with your ngrok URL
+    config['NGROK'],
+    config['FLUTTER_WEB'],
+    config['REACT_WEB'],
 ]
 CORS_ORIGIN_ALLOW_ALL = False
 # Application definition
@@ -51,6 +66,7 @@ INSTALLED_APPS = [
     'events.apps.EventsConfig',
     'home.apps.HomeConfig',
     'project.apps.ProjectConfig',
+    'attendance.apps.AttendanceConfig',
     
 ]
 
@@ -143,9 +159,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CROSS ORIGIN REQUEST SETTINGS
 
 CORS_ORIGIN_WHITELIST = [ 
-    'http://localhost:3000',  # Replace with the URL of your ReactJS client
-    'http://127.0.0.1:3000',  # If using localhost with IP address
-    'https://9f74-223-237-192-186.ngrok-free.app',# Replace with your ngrok URL
+    config['NGROK'],
+    config['FLUTTER_WEB'],
+    config['REACT_WEB'],
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -176,8 +192,9 @@ SESSION_COOKIE_DOMAIN = "None"
 
 
 # CSRF_TRUSTED_ORIGINS = [
-#     'http://*',
-#     'https://*' 
+#     config['NGROK'],
+#     config['FLUTTER_WEB'],
+#     config['REACT_WEB'], 
 # ]
 
 # CSRF_COOKIE_HTTPONLY = False

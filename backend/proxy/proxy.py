@@ -18,16 +18,18 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
         response = connection.getresponse()
 
         # Extract the cookie from the response
-        cookie = response.headers['Set-Cookie'].split(";")[0]
-        cookie = cookie.split("=")
-        key = cookie[0]
-        value = cookie[1]
-        message = {key: value}
+        try:
+            cookie = response.headers['Set-Cookie'].split(";")[0]
+            cookie = cookie.split("=")
+            key = cookie[0]
+            value = cookie[1]
+            message = {key: value} 
+        except:
+            message = {}
         message = json.dumps(message)
-
         # Set the CORS headers
         self.send_response(response.status)
-        self.send_header('Access-Control-Allow-Origin', 'http://localhost:3000, *')
+        self.send_header('Access-Control-Allow-Origin', 'http://localhost:3000')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.send_header('Access-Control-Allow-Credentials', 'true')
@@ -53,7 +55,7 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         # Set the CORS headers for the OPTIONS request
         self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', 'http://localhost:3000, *')
+        self.send_header('Access-Control-Allow-Origin', 'http://localhost:3000')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.send_header('Access-Control-Allow-Credentials', 'true')
