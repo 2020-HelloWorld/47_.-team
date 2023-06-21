@@ -23,18 +23,16 @@ def login_api(request):
     else:
         # Authentication failed
         return JsonResponse({'message': 'FAILURE'}, status=401)
-
-
+    
 def auth(request):
     req_body = request.body.decode('utf-8')
-    print(req_body)
     try:
         req = json.loads(req_body)
         cookie = req["cookies"]
         session_key = cookie.split("=")[1]
         print(session_key)
     except:
-        return JsonResponse({'message': 'FAILURE'}, status=401)
+        return {'message': 'FAILURE'},401
         
     User = get_user_model()
     try:
@@ -42,14 +40,20 @@ def auth(request):
         user_id = session.get_decoded().get('_auth_user_id')
         if user_id:
             user = User.objects.get(pk=user_id)
-            print(user)
+            print("user:",user)
             if user.is_authenticated:
                 groups = user.groups.all()   
-                return JsonResponse({'message': 'SUCCESS','group': f'{groups[0]}'}, status=200)
-        return JsonResponse({'message': 'FAILURE'}, status=401)
+                return {'message': 'SUCCESS','group': f'{groups[0]}','id':f"{user}"},200
+        return {'message': 'FAILURE'},401
     except Session.DoesNotExist:
-        return JsonResponse({'message': 'FAILURE'}, status=401)
+        return {'message': 'FAILURE'},401
 
+
+def auth_api(request):
+    message,status = auth(request=request)
+    return JsonResponse(message,status=status)
+    
+    
 def logout_api(request):
     req_body = request.body.decode('utf-8')
     try:

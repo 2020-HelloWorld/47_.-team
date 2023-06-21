@@ -23,6 +23,7 @@ class report(models.Model):
     id = models.AutoField(primary_key=True)
     details = models.CharField(max_length=1000)
     img = models.ImageField(upload_to="uploads")
+    event = models.ForeignKey(event,on_delete=models.CASCADE)  
 
 class organizer(models.Model):
     id = models.AutoField(primary_key=True)
