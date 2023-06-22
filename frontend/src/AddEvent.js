@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './AddEvent.css';
 import axios from 'axios';
+import { TARGET_URL } from './Config';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const AddEvent = () => {
   const [eventName, setEventName] = useState('');
@@ -11,16 +13,24 @@ const AddEvent = () => {
     e.preventDefault();
 
     try {
-      const formData = new FormData();
-      formData.append('name', eventName);
-      formData.append('date', eventDate);
-      formData.append('details', eventDetails);
+      const jsonData = {
+        name: eventName,
+        details: eventDetails,
+        date: eventDate,
+        cookies: document.cookie,
+        
+      };
 
-      const response = await axios.post('http://192.168.0.204:8000/events/addEvent/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(
+        TARGET_URL + '/events/add/',
+        jsonData,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       console.log('Event added successfully:', response.data);
 
@@ -32,6 +42,13 @@ const AddEvent = () => {
       console.error('Error occurred while adding event:', error);
     }
   };
+
+  const history = useHistory();
+  const handleAddEvent = () =>
+  {
+    history.push('/ClubeventList')
+    window.location.reload();
+  }
 
   return (
     <div className="addevent-container">
@@ -67,7 +84,7 @@ const AddEvent = () => {
             required
           ></textarea>
         </div>
-        <button type="submit" className="addevent-submit-button">
+        <button onClick={handleAddEvent} type="submit" className="addevent-submit-button">
           Add Event
         </button>
       </form>

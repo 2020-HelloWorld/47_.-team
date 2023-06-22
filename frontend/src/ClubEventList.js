@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ClubEventList.css';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import { TARGET_URL } from './Config.js';
 
 const ClubEventList = () => {
   const [modifyButtonVisible, setModifyButtonVisible] = useState(false);
@@ -9,20 +10,21 @@ const ClubEventList = () => {
   const [facultyButtonVisible, setFacultyButtonVisible] = useState(false);
   const [addEventButtonVisible, setAddEventButtonVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-
+  const [events, setEvents] = useState([]);
   const history = useHistory();
+
   const handleAddEvent = () => {
     history.push('/AddEvent');
     window.location.reload();
   };
 
-  const handleEventDetails = () => {
-    history.push('/EventDetails');
+  const handleEventDetails = (event) => {
+    history.push('/EventDetails', { event });
     window.location.reload();
   };
 
-  const handleParticipants = () => {
-    history.push('/Participants');
+  const handleParticipants = (eventId, eventName) => {
+    history.push('/Participants', { eventId, eventName });
     window.location.reload();
   };
 
@@ -31,72 +33,55 @@ const ClubEventList = () => {
     window.location.reload();
   };
 
-  const eventList = [
-    {
-      id: 1,
-      name: 'Event 1',
-      date: '2023-06-15',
-      status: 'Done',
-      type: 'Workshop',
-    },
-    {
-      id: 2,
-      name: 'Event 2',
-      date: '2023-07-10',
-      status: 'Ongoing',
-      type: 'Seminar',
-    },
-    {
-      id: 3,
-      name: 'Event 3',
-      date: '2023-08-05',
-      status: 'Upcoming',
-      type: 'Conference',
-    },
-  ];
+  const handleModify = (event) => {
+    const { id, name } = event;
+    history.push('/FormDetails', { id, name });
+    window.location.reload();
+  };
 
   useEffect(() => {
-    const jsonData = {
-      cookies: document.cookie,
-    };
-
-    axios
-      .post('https://9f74-223-237-192-186.ngrok-free.app/auth', jsonData, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then((response) => {
-        console.log(response);
+    const fetchData = async () => {
+      try {
+        const response = await axios.post(
+          TARGET_URL + '/events/get/',
+          {
+            cookies: document.cookie,
+          },
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
         if (response.status === 200) {
-          console.log('verified');
+          setEvents(response.data['events']);
           if (response.data['group'] === 'clubs') {
             setModifyButtonVisible(true);
             setAddEventButtonVisible(true);
             setParticipantButtonVisible(true);
             setFacultyButtonVisible(true);
-          } else if (
-            response.data['group'] === 'faculties' ||
-            response.data['group'] === 'student'
-          ) {
+          } else if (response.data['group'] === 'faculties' || response.data['group'] === 'student') {
             setParticipantButtonVisible(true);
           }
-          if (response.data['group'] === 'faculty') {
+          if (response.data['group'] === 'faculties') {
             setFacultyButtonVisible(true);
           }
-        } else {
-          console.log('not verified');
         }
-      });
+      } catch (error) {
+        console.log('Error:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredEventList = eventList.filter((event) =>
+  const filteredEventList = events.filter((event) =>
     event.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -117,8 +102,7 @@ const ClubEventList = () => {
           <tr>
             <th>Event Name</th>
             <th>Date</th>
-            <th>Status</th>
-            <th>Type</th>
+            <th>Details</th>
             <th></th>
             <th></th>
           </tr>
@@ -127,16 +111,15 @@ const ClubEventList = () => {
           {filteredEventList.map((event) => (
             <tr key={event.id}>
               <td>
-                <button onClick={handleEventDetails} className="ButtonStyle">
+                <button onClick={() => handleEventDetails(event)} className="ButtonStyle">
                   {event.name}
                 </button>
               </td>
               <td>{event.date}</td>
-              <td>{event.status}</td>
-              <td>{event.type}</td>
+              <td>{event.details}</td>
               <td>
                 {participantButtonVisible && (
-                  <button onClick={handleParticipants} className="ButtonStyle">
+                  <button onClick={() => handleParticipants(event.id, event.name)} className="ButtonStyle">
                     Participants
                   </button>
                 )}
@@ -150,7 +133,9 @@ const ClubEventList = () => {
               </td>
               <td>
                 {modifyButtonVisible && (
-                  <button className="ButtonStyle">Modify</button>
+                  <button onClick={() => handleModify(event)} className="ButtonStyle">
+                    Modify
+                  </button>
                 )}
               </td>
             </tr>

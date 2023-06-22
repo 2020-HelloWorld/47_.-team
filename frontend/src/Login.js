@@ -3,6 +3,7 @@ import './Login.css';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { TARGET_URL } from './Config';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -38,8 +39,10 @@ const Login = () => {
         passwd: password,
         //type:"login"
       };
+
+      const xrl = '/proxy/login';
   
-      axios.post('http://192.168.156.204:4000/login', jsonData, {
+      axios.post(TARGET_URL + xrl, jsonData, {
           withCredentials: true, // Include this option to send cookies
           headers: {
             'Content-Type': 'application/json',

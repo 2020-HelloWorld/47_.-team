@@ -17,6 +17,9 @@ import AddEvent from './AddEvent';
 import Load from './Load';
 import Participants from './Participants';
 import OrgCommittee from './OrgCommittee';
+import Student from './Student';
+import StudentDetails from './StudentDetails';
+import FormDetails from './FormDetails';
 
 
 
@@ -62,6 +65,12 @@ const App = () => {
         <Route path="/Participants" component = {Participants}/>
 
         <Route path = "/OrgCommittee" component = {OrgCommittee}/>
+
+        <Route path = "/Student" component = {Student}/>
+
+        <Route path = "/StudentDetails" component= {StudentDetails}/>
+
+        <Route path = "/FormDetails" component = {FormDetails}/>
 
 
 

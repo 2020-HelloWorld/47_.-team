@@ -1,65 +1,131 @@
-import React, { useState } from 'react';
-import './Participants.css';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { TARGET_URL } from './Config';
+import './Participants.css'
 
 const Participants = () => {
-  const participantList = [
-    {
-      name: 'John Doe',
-      srn: '123456789',
-      serialNumber: 1,
-      position: 'First Place',
-    },
-    {
-      name: 'Jane Smith',
-      srn: '987654321',
-      serialNumber: 2,
-      position: 'Second Place',
-    },
-    // Add more participants as needed
-  ];
+  const location = useLocation();
+  const [eventId, setEventId] = useState('');
+  const [eventName, setEventName] = useState('');
+  const [participantList, setParticipantList] = useState([]);
+  const [newParticipantSRN, setNewParticipantSRN] = useState('');
+  const [showAddParticipant, setShowAddParticipant] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState('');
+  useEffect(() => {
+    if (location.state) {
+      const { eventId, eventName } = location.state;
+      setEventId(eventId);
+      setEventName(eventName);
+      fetchData(eventId);
+    }
+  }, [location.state]);
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+  const fetchData = async (eventId) => {
+    try {
+      const response = await axios.post(
+        TARGET_URL + '/events/participant/get/',
+        {
+          cookies: document.cookie,
+          eventid: eventId,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log(response);
+
+      if (response.status === 200) {
+        setParticipantList(response.data.participants);
+      } else {
+        console.log('Failed to fetch participants');
+      }
+    } catch (error) {
+      console.log('Error:', error);
+    }
   };
 
-  const filteredParticipantList = participantList.filter((participant) =>
-    participant.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleAddParticipant = () => {
+    setShowAddParticipant(true);
+  };
+
+  const handleSaveParticipant = () => {
+    if (newParticipantSRN.trim() !== '') {
+      const newParticipant = {
+        srn: newParticipantSRN,
+        name: 'John Doe', // Replace with actual participant name
+      };
+      setParticipantList((prevList) => [...prevList, newParticipant]);
+      setNewParticipantSRN('');
+      setShowAddParticipant(false);
+
+      const data = {
+        cookies: document.cookie,
+        eventid: eventId,
+        srn: newParticipantSRN,
+      };
+
+      axios
+        .post(TARGET_URL + '/events/participant/add/', data)
+        .then((response) => {
+          console.log('POST request successful:', response.data);
+        })
+        .catch((error) => {
+          console.log('Error:', error);
+        });
+    }
+  };
 
   return (
-    <div className="participants-container">
-      <h2 className="participants-title">Participant List</h2>
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search by participant name..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="search-bar"
-        />
-      </div>
-      <table className="participants-table">
+    <div>
+      <h2>Participants</h2>
+      <h3>Event ID: {eventId}</h3>
+      <h3>Event Name: {eventName}</h3>
+      <table className="participant-table">
         <thead>
           <tr>
-            <th>Student Name</th>
             <th>SRN</th>
-            <th>Serial Number</th>
-            <th>Position</th>
+            <th>Name</th>
           </tr>
         </thead>
         <tbody>
-          {filteredParticipantList.map((participant) => (
-            <tr key={participant.srn}>
-              <td>{participant.name}</td>
-              <td>{participant.srn}</td>
-              <td>{participant.serialNumber}</td>
-              <td>{participant.position}</td>
+          {participantList && participantList.length > 0 ? (
+            participantList.map((participant, index) => (
+              <tr key={index}>
+                <td>{participant.srn}</td>
+                <td>{participant.name}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="2">No participants found.</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
+      <div>
+        {showAddParticipant ? (
+          <div>
+            <input
+              type="text"
+              placeholder="Participant SRN"
+              value={newParticipantSRN}
+              onChange={(e) => setNewParticipantSRN(e.target.value)}
+            />
+            <button className="ButtonStyle" onClick={handleSaveParticipant}>
+              Save Participant
+            </button>
+          </div>
+        ) : (
+          <button className="ButtonStyle" onClick={handleAddParticipant}>
+            Add Participant
+          </button>
+        )}
+      </div>
     </div>
   );
 };

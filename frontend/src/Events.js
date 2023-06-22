@@ -9,14 +9,13 @@ const Events = () => {
     setSearchTerm(e.target.value);
   };
 
-
   const history = useHistory();
-  const handleEventDetails = () => {
-    // Navigate to the "Login" page
-    history.push('/EventDetails');
+
+  const handleEventDetails = (event) => {
+    // Navigate to the "EventDetails" page
+    history.push('/EventDetails', { event: event });
     window.location.reload();
   };
-  
 
   const eventsData = [
     {
@@ -57,13 +56,19 @@ const Events = () => {
             <th>Event Name</th>
             <th>Signed and Approved By</th>
             <th>Position</th>
-      
           </tr>
         </thead>
         <tbody>
           {filteredEvents.map((event, index) => (
             <tr key={index}>
-              <td><button className='ButtonStyle' onClick={handleEventDetails}>{event.eventName}</button></td>
+              <td>
+                <button
+                  className="ButtonStyle"
+                  onClick={() => handleEventDetails(event)}
+                >
+                  {event.eventName}
+                </button>
+              </td>
               <td>{event.approvedBy}</td>
               <td>{event.position}</td>
             </tr>

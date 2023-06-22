@@ -1,20 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './EventDetails.css';
+import axios from 'axios';
+import { TARGET_URL } from './Config';
 
-const EventDetails = () => {
-  const event = {
-    id: 1,
-    name: 'Event 1',
-    date: '2023-06-15',
-    status: 'Done',
-    type: 'Workshop',
-    winners: [
-      { position: 1, name: 'John Doe', prizeMoney: '$100' },
-      { position: 2, name: 'Jane Smith', prizeMoney: '$50' },
-      { position: 3, name: 'Mark Johnson', prizeMoney: '$25' },
-      { position: 4, name: 'Emily Davis', prizeMoney: '$10' },
-      { position: 5, name: 'Michael Wilson', prizeMoney: '$5' },
-    ],
+const EventDetails = (props) => {
+  const { event } = props.location.state;
+  const [report, setReport] = useState('');
+  const [showUpload, setShowUpload] = useState(false);
+
+  useEffect(() => {
+    const jsonData = {
+      cookies: document.cookie,
+    };
+
+    axios
+      .post(TARGET_URL + '/auth', jsonData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => {
+        console.log(response);
+
+        if (response.status === 200) {
+          console.log('verified');
+          if (response.data['group'] === 'clubs') {
+            setShowUpload(true);
+            console.log('clubs');
+          }
+        } else {
+          console.log('not verified');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  const handleReportChange = (e) => {
+    setReport(e.target.value);
+  };
+
+  const handleUpload = () => {
+    // Handle image upload logic here
   };
 
   return (
@@ -24,27 +53,27 @@ const EventDetails = () => {
         <div className="event-details-info">
           <h3 className="event-details-name">{event.name}</h3>
           <p>Date: {event.date}</p>
-          <p>Status: {event.status}</p>
-          <p>Type: {event.type}</p>
-        </div>
-        <div className="event-details-winners">
-          <h3>Top 5 Winners</h3>
-          <ul>
-            {event.winners.map((winner) => (
-              <li key={winner.position}>
-                <span className="winner-position">{winner.position}</span>
-                <span className="winner-name">{winner.name}</span>
-                <span className="winner-prize">{winner.prizeMoney}</span>
-              </li>
-            ))}
-          </ul>
+          <p>Details: {event.details}</p>
         </div>
       </div>
-      <div className="event-details-upload">
+      {/* <div className="report-container">
+        <h3>Report</h3>
+        <textarea
+          value={report}
+          onChange={handleReportChange}
+          placeholder="Enter report..."
+          className="report-textarea"
+        ></textarea>
+      </div> */}
+      
+      {/* <div className="event-details-upload">
         <h3>Add Images</h3>
         <input type="file" accept="image/*" multiple />
-        <button className="ButtonStyle">Upload</button>
-      </div>
+        <button className="ButtonStyle" onClick={handleUpload}>
+          Upload
+        </button>
+      </div> */}
+      
     </div>
   );
 };
