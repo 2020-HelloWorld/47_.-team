@@ -2,15 +2,15 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from home.views import auth
 from events import models
-from home.models import club 
+from home.models import club,student
 from django.http import JsonResponse
 import json
 from datetime import datetime
-
 # Create your views here.
 
 def addEvent(request):
-    message,status = auth(request=request)
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
     if status==200 and message["group"]=="clubs":
         try:
             req_body = request.body.decode('utf-8')
@@ -30,7 +30,8 @@ def addEvent(request):
 
     
 def eventList(request):
-    message,status = auth(request=request)
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
     print(message)
     eventList = list()
     if status==200:
@@ -46,7 +47,7 @@ def eventList(request):
                 })
             message["events"] = eventList
         elif message['group']=="students":
-            events =  models.event.objects.filter(participant__srn__srn=message['id'])
+            events = event.objects.filter(participants__srn__srn=message["id"])
             for event in  events:
                 eventList.append({
                     "id" : event.id,
@@ -59,7 +60,8 @@ def eventList(request):
             try:
                 req_body = request.body.decode('utf-8')
                 req = json.loads(req_body)
-                events =  models.event.objects.filter(participant__srn__srn=req['club'])
+                clubId = club.objects.get(id = req['club'])
+                events =  models.event.objects.filter(club=clubId)
                 for event in  events:
                     eventList.append({
                         "id" : event.id,
@@ -70,4 +72,73 @@ def eventList(request):
             except:
                 pass
             message["events"] = eventList
+    return JsonResponse(message,status=status)
+
+def addReport(request):
+    req_body = request.POST.get('request')
+    file = request.FILES.get('file')
+    print(file)
+    message,status = auth(req_body=req_body)
+
+    if status==200:
+        if message['group']=="clubs":
+            try:
+                req = json.loads(req_body)
+                eventId = models.event.objects.get(id=req["eventid"])
+                new = models.report(
+                    details = req["details"],
+                    img = file,
+                    event = eventId
+                )
+                new.save()
+            except Exception as e:
+                print("ERROR:",e)
+                message['message'] = "FAILURE"
+                status = 401
+        else:
+            message['message'] = "FAILURE"
+            status = 401
+        return JsonResponse(message,status=status)
+    
+def addParticipant(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    print(message,status)
+    if status==200:
+        if message['group']=="clubs":
+            try:
+                req = json.loads(req_body)
+                eventId = models.event.objects.get(id=req["eventid"])
+                srn = student.objects.get(srn=req["srn"])
+                new = models.participant(
+                    srn = srn,
+                    event = eventId,
+                )
+                new.save()
+            except Exception as e:
+                print("ERROR:",e)
+                message['message'] = "FAILURE"
+                status = 401
+        else:
+            message['message'] = "FAILURE"
+            status = 401
+    return JsonResponse(message,status=status)
+
+def participantList(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    if status==200:
+        if message['group']=="clubs":
+            req = json.loads(req_body)
+            print(req)
+            eventId = models.event.objects.get(id=req["eventid"])
+            participants = models.participant.objects.filter(event=eventId)
+            print(participants)
+            participant_list = list()
+            for participant in  participants:
+                participant_list.append({
+                    "srn" : participant.srn.srn,
+                    "name":participant.srn.name,
+                })
+        message["participants"] = participant_list
     return JsonResponse(message,status=status)

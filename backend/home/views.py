@@ -8,6 +8,8 @@ import http.client
 
 # Create your views here.
 def login_api(request):    
+    if request.method=="GET":
+        return HttpResponse("Testing")
     req_body = request.body.decode('utf-8')
     req = json.loads(req_body)
     username = req["id"]
@@ -24,8 +26,7 @@ def login_api(request):
         # Authentication failed
         return JsonResponse({'message': 'FAILURE'}, status=401)
     
-def auth(request):
-    req_body = request.body.decode('utf-8')
+def auth(req_body):
     try:
         req = json.loads(req_body)
         cookie = req["cookies"]
@@ -50,7 +51,8 @@ def auth(request):
 
 
 def auth_api(request):
-    message,status = auth(request=request)
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
     return JsonResponse(message,status=status)
     
     
