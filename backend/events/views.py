@@ -142,3 +142,72 @@ def participantList(request):
                 })
         message["participants"] = participant_list
     return JsonResponse(message,status=status)
+
+def addOrganizer(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    print(message,status)
+    if status==200:
+        if message['group']=="clubs":
+            try:
+                req = json.loads(req_body)
+                eventId = models.event.objects.get(id=req["eventid"])
+                srn = student.objects.get(srn=req["srn"])
+                new = models.organizer(
+                    srn = srn,
+                    event = eventId,
+                    role = req["role"],
+                )
+                new.save()
+            except Exception as e:
+                print("ERROR:",e)
+                message['message'] = "FAILURE"
+                status = 401
+        else:
+            message['message'] = "FAILURE"
+            status = 401
+    return JsonResponse(message,status=status)
+
+def organizerList(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    if status==200:
+        if message['group']=="clubs":
+            req = json.loads(req_body)
+            print(req)
+            eventId = models.event.objects.get(id=req["eventid"])
+            organizers = models.organizer.objects.filter(event=eventId)
+            print(organizers)
+            organizer_list = list()
+            for organizer in  organizers:
+                organizer_list.append({
+                    "srn" : organizer.srn.srn,
+                    "name":organizer.srn.name,
+                    "role" : organizer.role,
+                })
+        message["organizers"] = organizer_list
+    return JsonResponse(message,status=status)
+
+def getReport(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    if status==200:
+        try:
+            req_object = request.body.decode('utf-8')
+            req = json.loads(req_object)
+            report_obj = models.report.objects.filter(event__id=req["eventid"]).first()
+            print(report_obj)
+            image_url = report_obj.img.url
+            message["image"] = image_url
+            message["report"] = report_obj.details
+        except Exception as e:
+                print("ERROR:",e)
+                message['message'] = "FAILURE"
+                status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+            
+    
+   

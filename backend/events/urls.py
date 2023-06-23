@@ -7,4 +7,7 @@ urlpatterns = [
     path('report/add/',views.addReport),
     path('participant/add/',views.addParticipant),
     path('participant/get/',views.participantList),
+    path('organizer/add/',views.addOrganizer),
+    path('organizer/get/',views.organizerList),
+    path('report/get/',views.getReport),
 ]

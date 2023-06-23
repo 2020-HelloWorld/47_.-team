@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,6 +25,11 @@ SECRET_KEY = 'django-insecure-828^sbusw-yvqa3xya$pd6)=^f$n1#5db%bdwanxd29)is*jtz
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+
+# This is to configure the settnigs for serving static files 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, '')
 
 # Reading Configuration File
 config = {}
@@ -183,11 +189,12 @@ CORS_ALLOWED_METHODS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_PATH = '/'
-SESSION_COOKIE_DOMAIN = "None"
+
+# SESSION_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SAMESITE = "None"
+# SESSION_COOKIE_PATH = '/'
+# SESSION_COOKIE_DOMAIN = "None"
 
 
 
