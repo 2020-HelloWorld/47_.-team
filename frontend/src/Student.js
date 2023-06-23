@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Student.css';
 import { useHistory } from 'react-router-dom';
 
@@ -21,15 +21,34 @@ const Student = () => {
     // Add more student details as needed
   ];
 
+  const [searchQuery, setSearchQuery] = useState('');
   const history = useHistory();
-  const handleStudentName =() => {
+
+  const handleStudentName = () => {
     history.push('./StudentDetails');
     window.location.reload();
-  }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredStudents = studentList.filter((student) =>
+    student.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="student-container">
       <h2 className="student-title">Student Details</h2>
+      <div className="search-bar-container">
+        <input
+          type="text"
+          placeholder="Search by name"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="search-bar"
+        />
+      </div>
       <table className="student-table">
         <thead>
           <tr>
@@ -41,10 +60,14 @@ const Student = () => {
           </tr>
         </thead>
         <tbody>
-          {studentList.map((student) => (
+          {filteredStudents.map((student) => (
             <tr key={student.id}>
               <td>{student.id}</td>
-              <td><button className='ButtonStyle' onClick={handleStudentName}>{student.name}</button></td>
+              <td>
+                <button className="ButtonStyle" onClick={handleStudentName}>
+                  {student.name}
+                </button>
+              </td>
               <td>{student.rollNumber}</td>
               <td>{student.department}</td>
               <td>{student.year}</td>

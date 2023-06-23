@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { TARGET_URL } from './Config';
-import './Participants.css'
+import './Participants.css';
 
 const Participants = () => {
   const location = useLocation();
@@ -82,10 +82,10 @@ const Participants = () => {
 
   return (
     <div>
-      <h2>Participants</h2>
-      <h3>Event ID: {eventId}</h3>
-      <h3>Event Name: {eventName}</h3>
-      <table className="participant-table">
+      <h2 className='htwo'>Participants</h2>
+      <h3 className='hthree'>Event ID: {eventId}</h3>
+      <h3 className='hthree'>Event Name: {eventName}</h3>
+      <table className="participants-table">
         <thead>
           <tr>
             <th>SRN</th>

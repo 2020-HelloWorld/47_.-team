@@ -28,8 +28,8 @@ const ClubEventList = () => {
     window.location.reload();
   };
 
-  const handleOrgCommittee = () => {
-    history.push('/OrgCommittee');
+  const handleOrgCommittee = (eventId) => {
+    history.push('/OrgCommittee', { eventId });
     window.location.reload();
   };
 
@@ -105,6 +105,7 @@ const ClubEventList = () => {
             <th>Details</th>
             <th></th>
             <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -126,18 +127,18 @@ const ClubEventList = () => {
               </td>
               <td>
                 {facultyButtonVisible && (
-                  <button onClick={handleOrgCommittee} className="ButtonStyle">
+                  <button onClick={() => handleOrgCommittee(event.id)} className="ButtonStyle">
                     Organising Committee
                   </button>
                 )}
               </td>
-              <td>
+              {/* <td>
                 {modifyButtonVisible && (
                   <button onClick={() => handleModify(event)} className="ButtonStyle">
                     Modify
                   </button>
                 )}
-              </td>
+              </td> */}
             </tr>
           ))}
         </tbody>

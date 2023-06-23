@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './FormDetails.css';
 import { TARGET_URL } from './Config';
 
 const FormDetails = () => {
+
+    const history=useHistory();
   const location = useLocation();
   const { id, name } = location.state;
 
@@ -45,11 +47,16 @@ const FormDetails = () => {
       });
 
       console.log('Response:', response);
+      
+      history.push('./ClubEventList')
+      window.location.reload();
       // Handle the response or perform any other actions here
     } catch (error) {
       console.log('Error:', error);
       // Handle the error or display an error message
     }
+
+    
   };
 
   return (

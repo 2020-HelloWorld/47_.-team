@@ -1,2 +1,2 @@
 // config.js
-export const TARGET_URL = 'https://f5d8-2401-4900-62f2-4601-ad7c-efba-59ac-c82.ngrok-free.app';
+export const TARGET_URL = 'https://abef-2401-4900-61a6-e6d8-8958-2ee2-86a6-2910.ngrok-free.app';
