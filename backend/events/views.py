@@ -11,6 +11,8 @@ from datetime import datetime
 def addEvent(request):
     req_body = request.body.decode('utf-8')
     message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
     if status==200 and message["group"]=="clubs":
         try:
             req_body = request.body.decode('utf-8')
@@ -32,7 +34,8 @@ def addEvent(request):
 def eventList(request):
     req_body = request.body.decode('utf-8')
     message,status = auth(req_body=req_body)
-    print(message)
+    req = json.loads(req_body)
+    print(message,req)
     eventList = list()
     if status==200:
         if message['group']=="clubs":
@@ -47,7 +50,7 @@ def eventList(request):
                 })
             message["events"] = eventList
         elif message['group']=="students":
-            events = event.objects.filter(participants__srn__srn=message["id"])
+            events = models.event.objects.filter(participants__srn__srn=message["id"])
             for event in  events:
                 eventList.append({
                     "id" : event.id,
@@ -56,7 +59,7 @@ def eventList(request):
                     "details":event.details
                 })
             message["events"] = eventList
-        else:
+        elif message['group']=="faculties":
             try:
                 req_body = request.body.decode('utf-8')
                 req = json.loads(req_body)
@@ -72,6 +75,9 @@ def eventList(request):
             except:
                 pass
             message["events"] = eventList
+        else:
+            message['message'] = "FAILURE"
+            status = 401
     return JsonResponse(message,status=status)
 
 def addReport(request):
@@ -207,7 +213,32 @@ def getReport(request):
     else:
         message['message'] = "FAILURE"
         status = 401
-    return JsonResponse(message,status=status)
-            
-    
-   
+    return JsonResponse(message,status=status)   
+
+def getClubList(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
+    if status==200:
+        try:
+            clubList = list()
+            clubs = club.objects.all()
+            for Itr in clubs:
+                clubList.append({
+                    "name" : Itr.name,
+                    "id" : Itr.id,
+                    "headSRN" : Itr.head.srn,
+                    "headName": Itr.head.name,
+                    "facultyId" : Itr.faculty.id,
+                    "facultyName":Itr.faculty.name,
+                })
+            message["clubs"] = clubList
+        except Exception as e:
+                print("ERROR:",e)
+                message['message'] = "FAILURE"
+                status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)  

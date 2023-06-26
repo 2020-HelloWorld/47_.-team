@@ -10,4 +10,5 @@ urlpatterns = [
     path('organizer/add/',views.addOrganizer),
     path('organizer/get/',views.organizerList),
     path('report/get/',views.getReport),
+    path('club/get/',views.getClubList),
 ]
