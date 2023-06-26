@@ -5,6 +5,8 @@ import json
 from django.contrib.sessions.models import Session
 from django.contrib.auth import get_user_model
 import http.client
+from home import models
+from events.models import event
 
 # Create your views here.
 def login_api(request):    
@@ -154,3 +156,86 @@ def proxy_handler(request,*args):
                 print("No Cookie Infotmation")
                 pass
         return JsonResponse(response_data,status=401)
+
+def studentsList(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
+    if status==200:
+        try:
+            students_list = list()
+            students = models.student.objects.all()
+            for Iter in students:
+                students_list.append({
+                    "srn":Iter.srn,
+                    "name":Iter.name,
+                    "departmentId":Iter.department.id,
+                    "departmentName":Iter.department.name,
+                    "sem":Iter.sem,
+                })
+            message["students"] = students_list
+        except Exception as e:
+                print("ERROR:",e)
+                message['message'] = "FAILURE"
+                status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+
+def studentProfile(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
+    if status==200:
+        try:
+            eventList = list()
+            student = models.student.objects.get(srn=req["srn"])
+            message["srn"] = student.srn 
+            message["name"] = student.name 
+            message["departmentName"] = student.department.name
+            message["departmentId"] = student.department.id 
+            message["sem"] = student.sem
+            message["cgpa"] = None 
+            message["events"] = None
+            if message["group"] == "faculties":
+                events = event.objects.filter(participants__srn__srn=req["srn"])
+                for Iter in  events:
+                    eventList.append({
+                        "id" : Iter.id,
+                        "name":Iter.name,
+                        "date":Iter.date,
+                        "details":Iter.details
+                    })
+                message["cgpa"] = student.cgpa
+                message["events"] = eventList
+        except Exception as e:
+                print("ERROR:",e)
+                message['message'] = "FAILURE"
+                status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+
+def facultyProfile(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
+    if status==200:
+        try:
+            faculty = models.faculty.objects.get(id=req["id"])
+            message["id"] = faculty.id
+            message["name"] = faculty.name
+        except Exception as e:
+                print("ERROR:",e)
+                message['message'] = "FAILURE"
+                status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+            
