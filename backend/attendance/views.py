@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 import json
 from home.views import auth
-from home.models import student,subject
+from home.models import student,subject,faculty
 from attendance import models
 from datetime import datetime
 from dateutil.parser import parse
@@ -53,6 +53,63 @@ def addAttendanceRequest(request):
                     end = parse(iter["end"]).time(),
                 )
                 new.save()
+        except Exception as e:
+            print("ERROR:",e)
+            message['message'] = "FAILURE"
+            status = 401
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+
+
+def getDeclaration(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
+    declarationList = list()
+    if status==200 and message["group"]=="faculties":
+        try:
+            facultyId = faculty.objects.get(id=message["id"])
+            if facultyId.access >= 1:
+                declarations = list()
+                if facultyId.access == 1:
+                    declarations = models.declaration.objects.filter(student__fams__faculty__id=message["id"], signed = 0)
+                elif faculty.access == 2:
+                    declarations = models.declaration.objects.filter(student__department__chairperson__id = facultyId.id, signed = 1)
+                elif faculty.access == 3:
+                    declarations = models.declaration.objects.filter(signed = 2)
+                for itr in declarations:
+                    declarationList.append({
+                        "srn":itr.student.srn,
+                        "name":itr.student.name,
+                        "doc":itr.doc.url,
+                        "id":itr.id
+                        })
+            message["declaration"] = declarationList
+        except Exception as e:
+            print("ERROR:",e)
+            message['message'] = "FAILURE"
+            status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+
+def signDeclaration(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)    
+    if status==200 and message["group"]=="faculties":
+        try:
+            declaration = models.declaration.objects.get(id=req["id"])
+            if req["result"] == True:
+                declaration.signed = declaration.signed + 1
+            else:
+                declaration.signed = -1
+            declaration.save()
         except Exception as e:
             print("ERROR:",e)
             message['message'] = "FAILURE"

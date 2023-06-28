@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from django.http import HttpResponse
 from home.views import auth
 from events import models
 from home.models import club,student
@@ -133,19 +131,19 @@ def addParticipant(request):
 def participantList(request):
     req_body = request.body.decode('utf-8')
     message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
+    participant_list = list()
     if status==200:
-        if message['group']=="clubs":
-            req = json.loads(req_body)
-            print(req)
-            eventId = models.event.objects.get(id=req["eventid"])
-            participants = models.participant.objects.filter(event=eventId)
-            print(participants)
-            participant_list = list()
-            for participant in  participants:
-                participant_list.append({
-                    "srn" : participant.srn.srn,
-                    "name":participant.srn.name,
-                })
+        print(req)
+        eventId = models.event.objects.get(id=req["eventid"])
+        participants = models.participant.objects.filter(event=eventId)
+        print(participants)
+        for participant in  participants:
+            participant_list.append({
+                "srn" : participant.srn.srn,
+                "name":participant.srn.name,
+            })
         message["participants"] = participant_list
     return JsonResponse(message,status=status)
 

@@ -5,7 +5,7 @@ from home.models import faculty,student,subject
 # Create your models here.
 class fam(models.Model):
     faculty = models.ForeignKey(faculty,on_delete=models.CASCADE)
-    student = models.ForeignKey(student,on_delete=models.CASCADE)
+    student = models.ForeignKey(student,on_delete=models.CASCADE,related_name="fams")
     class Meta:
         unique_together = (('faculty','student'),)
         
