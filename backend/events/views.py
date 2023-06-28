@@ -107,11 +107,11 @@ def addReport(request):
 def addParticipant(request):
     req_body = request.body.decode('utf-8')
     message,status = auth(req_body=req_body)
-    print(message,status)
+    req = json.loads(req_body)
+    print(message,status,req)
     if status==200:
         if message['group']=="clubs":
             try:
-                req = json.loads(req_body)
                 eventId = models.event.objects.get(id=req["eventid"])
                 srn = student.objects.get(srn=req["srn"])
                 new = models.participant(
@@ -122,7 +122,14 @@ def addParticipant(request):
             except Exception as e:
                 print("ERROR:",e)
                 message['message'] = "FAILURE"
-                status = 401
+                status = 404
+        elif message['group']=="students":
+            try:
+                srn = student.objects.get(srn=req["id"])
+            except Exception as e:
+                print(e)
+                message['message'] = "FAILURE"
+                status = 404
         else:
             message['message'] = "FAILURE"
             status = 401

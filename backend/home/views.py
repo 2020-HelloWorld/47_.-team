@@ -211,6 +211,42 @@ def studentProfile(request):
                     })
                 message["cgpa"] = student.cgpa
                 message["events"] = eventList
+            if student.srn == message["id"]:
+                message["cgpa"] = student.cgpa
+                
+                # Getting declaration forms list and status
+                target_host = request.get_host()
+                target_path = "/attendance/declaration/get/"
+                
+                # Create a connection to the target server
+                connection = http.client.HTTPSConnection(target_host)
+                
+                post_data = {
+                    "cookies":req["cookies"]
+                }
+                # Encode the post_data as JSON
+                post_data_json = json.dumps(post_data).encode('utf-8')
+
+                # Calculate the length of the encoded data
+                content_length = len(post_data_json)
+
+                # Set the headers for the POST request
+                headers = {
+                    'Content-Type': 'application/json',
+                    'Content-Length': content_length,
+                }
+
+                
+                # Send a POST request to the target server
+                connection.request('POST', target_path, body=post_data_json, headers=headers)
+
+                # Get the response from the target server
+                response = connection.getresponse()
+                response_body = response.read().decode('utf-8')
+                response_data = json.loads(response_body)   
+                
+                message["declaration"] = response_data["declaration"]
+   
         except Exception as e:
                 print("ERROR:",e)
                 message['message'] = "FAILURE"

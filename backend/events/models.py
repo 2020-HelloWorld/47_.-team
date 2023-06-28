@@ -1,5 +1,6 @@
 from django.db import models
 from home.models import club,student
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
@@ -13,7 +14,10 @@ class event(models.Model):
 class participant(models.Model):
     id = models.AutoField(primary_key=True)
     srn = models.ForeignKey(student,on_delete=models.CASCADE)
-    event = models.ForeignKey(event,on_delete=models.CASCADE, related_name='participants')
+    event = models.ForeignKey(event,on_delete=models.SET_NULL, null=True, default=None, related_name='participants')
+    details = models.CharField(max_length=500,null=True, default=None)
+    proof = models.ImageField(upload_to="uploads",null=True, default=None)
+    signed = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(1)],null=True,default=None)
     
 class winner(models.Model):
     id = models.OneToOneField(participant,primary_key=True,on_delete=models.CASCADE)

@@ -69,24 +69,31 @@ def getDeclaration(request):
     req = json.loads(req_body)
     print(message,req)
     declarationList = list()
-    if status==200 and message["group"]=="faculties":
+    if status==200 :
         try:
-            facultyId = faculty.objects.get(id=message["id"])
-            if facultyId.access >= 1:
-                declarations = list()
-                if facultyId.access == 1:
-                    declarations = models.declaration.objects.filter(student__fams__faculty__id=message["id"], signed = 0)
-                elif faculty.access == 2:
-                    declarations = models.declaration.objects.filter(student__department__chairperson__id = facultyId.id, signed = 1)
-                elif faculty.access == 3:
-                    declarations = models.declaration.objects.filter(signed = 2)
-                for itr in declarations:
-                    declarationList.append({
-                        "srn":itr.student.srn,
-                        "name":itr.student.name,
-                        "doc":itr.doc.url,
-                        "id":itr.id
-                        })
+            declarations = ["hehe"]
+            if message["group"]=="faculties":
+                facultyId = faculty.objects.get(id=message["id"])
+                if facultyId.access >= 1:
+                    if facultyId.access == 1:
+                        declarations = models.declaration.objects.filter(student__fams__faculty__id=message["id"], signed = 0)
+                    elif facultyId.access == 2:
+                        declarations = models.declaration.objects.filter(student__department__chairperson__id = facultyId.id, signed = 1)
+                    elif facultyId.access == 3:
+                        declarations = models.declaration.objects.filter(signed = 2)
+                        
+            elif message["group"] == "students":
+                declarations = models.declaration.objects.filter(student__srn=message["id"])
+            
+            for itr in declarations:
+                declarationList.append({
+                    "srn":itr.student.srn,
+                    "name":itr.student.name,
+                    "doc":itr.doc.url,
+                    "id":itr.id,
+                    "status" : itr.signed,
+                    })
+    
             message["declaration"] = declarationList
         except Exception as e:
             print("ERROR:",e)
