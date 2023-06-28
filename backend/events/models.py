@@ -8,16 +8,14 @@ class event(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=25)
     date = models.DateField()
-    club = models.ForeignKey(club,on_delete=models.CASCADE)
+    club = models.ForeignKey(club,on_delete=models.SET_NULL,null=True, default=None)
     details =  models.CharField(max_length=250)
+    signed = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(1)],default=-1)
 
 class participant(models.Model):
     id = models.AutoField(primary_key=True)
     srn = models.ForeignKey(student,on_delete=models.CASCADE)
-    event = models.ForeignKey(event,on_delete=models.SET_NULL, null=True, default=None, related_name='participants')
-    details = models.CharField(max_length=500,null=True, default=None)
-    proof = models.ImageField(upload_to="uploads",null=True, default=None)
-    signed = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(1)],null=True,default=None)
+    event = models.ForeignKey(event,on_delete=models.CASCADE,related_name='participants')
     
 class winner(models.Model):
     id = models.OneToOneField(participant,primary_key=True,on_delete=models.CASCADE)

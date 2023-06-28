@@ -1,6 +1,6 @@
 from home.views import auth
 from events import models
-from home.models import club,student
+from home.models import club,student,faculty
 from django.http import JsonResponse
 import json
 from datetime import datetime
@@ -44,18 +44,33 @@ def eventList(request):
                     "id" : event.id,
                     "name":event.name,
                     "date":event.date,
-                    "details":event.details
+                    "details":event.details,
+                    "status":event.signed
                 })
             message["events"] = eventList
         elif message['group']=="students":
             events = models.event.objects.filter(participants__srn__srn=message["id"])
             for event in  events:
-                eventList.append({
-                    "id" : event.id,
-                    "name":event.name,
-                    "date":event.date,
-                    "details":event.details
-                })
+                if event.club!=None:
+                    eventList.append({
+                        "id" : event.id,
+                        "name":event.name,
+                        "date":event.date,
+                        "details":event.details,
+                        "status":event.signed,
+                        "clubId":event.club.id,
+                        "clubName":event.club.name,
+                    })
+                else:
+                    eventList.append({
+                        "id" : event.id,
+                        "name":event.name,
+                        "date":event.date,
+                        "details":event.details,
+                        "status":event.signed,
+                        "clubId":None,
+                        "clubName":None,
+                    })
             message["events"] = eventList
         elif message['group']=="faculties":
             try:
@@ -68,7 +83,8 @@ def eventList(request):
                         "id" : event.id,
                         "name":event.name,
                         "date":event.date,
-                        "details":event.details
+                        "details":event.details,
+                        "status":event.signed
                     })   
             except:
                 pass
@@ -82,13 +98,14 @@ def addReport(request):
     req_body = request.POST.get('request')
     file = request.FILES.get('file')
     print(file)
+    req = json.loads(req_body)
     message,status = auth(req_body=req_body)
-
     if status==200:
         if message['group']=="clubs":
             try:
-                req = json.loads(req_body)
                 eventId = models.event.objects.get(id=req["eventid"])
+                eventId.signed = 0
+                eventId.save()
                 new = models.report(
                     details = req["details"],
                     img = file,
@@ -105,7 +122,11 @@ def addReport(request):
         return JsonResponse(message,status=status)
     
 def addParticipant(request):
-    req_body = request.body.decode('utf-8')
+    req_body = request.POST.get('request')
+    try:
+        file = request.FILES.get('file')
+    except:
+        pass
     message,status = auth(req_body=req_body)
     req = json.loads(req_body)
     print(message,status,req)
@@ -125,7 +146,26 @@ def addParticipant(request):
                 status = 404
         elif message['group']=="students":
             try:
-                srn = student.objects.get(srn=req["id"])
+                srn = student.objects.get(srn=message["id"])
+                newEvent = models.event(
+                    name = req["title"],
+                    date  = datetime.strptime(req["date"], "%Y-%m-%d").date(),
+                    details = req["subject"]
+                )
+                newEvent.save()
+                newParticipant = models.participant(
+                    srn = srn,
+                    event = newEvent
+                )
+                newParticipant.save()
+                newReport = models.report(
+                    details = req["details"],
+                    img = file,
+                    event = newEvent
+                )
+                newReport.save()
+                newEvent.signed = 0
+                newEvent.save()
             except Exception as e:
                 print(e)
                 message['message'] = "FAILURE"
@@ -247,3 +287,71 @@ def getClubList(request):
         message['message'] = "FAILURE"
         status = 401
     return JsonResponse(message,status=status)  
+
+def eventApprovals(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
+    if status==200:
+        try:
+            unsignedClubEventsList = list()
+            unsignedExtraEventsList = list()
+            if message["group"] == "faculties":
+                unsignedClubEvents = models.event.objects.filter(signed=0,club__faculty__id=message["id"])
+                unsignedExtraEvents = models.event.objects.filter(signed=0,club=None)
+
+                for itr in unsignedClubEvents:
+                    unsignedClubEventsList.append({
+                        "id" : itr.id,
+                        "name":itr.name,
+                        "date":itr.date,
+                        "details":itr.details,
+                        "clubId":itr.club.id,
+                        "clubName":itr.club.name
+                    })
+                for itr in unsignedExtraEvents:
+                    unsignedExtraEventsList.append({
+                        "id" : itr.id,
+                        "name":itr.name,
+                        "date":itr.date,
+                        "details":itr.details,
+                        "status":itr.signed,
+                        "srn": itr.participants.first().srn.srn,
+                        "student":itr.participants.first().srn.name,
+                    })
+                    
+            message["clubEvents"] = unsignedClubEventsList
+            message["extraEvents"] = unsignedExtraEventsList
+                
+        except Exception as e:
+            print("ERROR:",e)
+            message['message'] = "FAILURE"
+            status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+                
+def signEvent(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
+    if status==200 and message["group"]=="faculties":
+        try:
+            eventId = models.event.objects.get(id=req["eventid"])
+            if req["result"] == True:
+                eventId.signed = eventId.signed + 1
+            else:
+                eventId.signed = -1
+            eventId.save()
+        except Exception as e:
+            print("ERROR:",e)
+            message['message'] = "FAILURE"
+            status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+            

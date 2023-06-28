@@ -65,7 +65,7 @@ def logout_api(request):
         cookie = req["cookies"]
         session_key = cookie.split("=")[1]
     except:
-        return JsonResponse({'message': 'Not Authenticated'}, status=401)
+        return JsonResponse({'message': 'FAILURE'}, status=401)
     
     User = get_user_model()
     try:

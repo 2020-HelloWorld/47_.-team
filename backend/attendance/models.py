@@ -1,6 +1,6 @@
 from django.db import models
 from home.models import faculty,student,subject
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class fam(models.Model):
@@ -19,7 +19,7 @@ class studentcourse(models.Model):
 class declaration(models.Model):
     id = models.AutoField(primary_key=True)
     student = models.ForeignKey(student,on_delete=models.CASCADE)
-    signed = models.IntegerField()
+    signed = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(3)],default=0)
     doc = models.ImageField(upload_to="uploads")
     
 class attendaceRequest(models.Model):

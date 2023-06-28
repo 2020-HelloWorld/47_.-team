@@ -11,4 +11,6 @@ urlpatterns = [
     path('organizer/get/',views.organizerList),
     path('report/get/',views.getReport),
     path('club/get/',views.getClubList),
+    path('approvals/get/',views.eventApprovals),
+    path('approval/',views.signEvent),
 ]
