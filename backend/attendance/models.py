@@ -1,5 +1,6 @@
 from django.db import models
 from home.models import faculty,student,subject
+from events.models import event
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
@@ -25,6 +26,7 @@ class declaration(models.Model):
 class attendaceRequest(models.Model):
     id = models.AutoField(primary_key=True)
     student = models.ForeignKey(student,on_delete=models.CASCADE)
+    event = models.ForeignKey(event,on_delete=models.CASCADE)
     signed = models.IntegerField()
     
 class subjectAttendaceRequest(models.Model):

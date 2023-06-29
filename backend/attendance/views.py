@@ -5,6 +5,7 @@ from home.models import student,subject,faculty
 from attendance import models
 from datetime import datetime
 from dateutil.parser import parse
+from events.models import event
 
 # Create your views here.
 def addDeclaration(request):
@@ -39,9 +40,11 @@ def addAttendanceRequest(request):
     if status==200:
         try:
             srn = student.objects.get(srn=message["id"])
+            eventId = event.objects.get(id=req["eventid"])
             newForm = models.attendaceRequest(
                 student = srn,
                 signed = 0,
+                event = eventId
             )
             newForm.save()
             for iter in req["attendancerequest"]:
@@ -125,3 +128,4 @@ def signDeclaration(request):
         message['message'] = "FAILURE"
         status = 401
     return JsonResponse(message,status=status)
+

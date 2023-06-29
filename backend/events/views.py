@@ -1,6 +1,6 @@
 from home.views import auth
 from events import models
-from home.models import club,student,faculty
+from home.models import club,student
 from django.http import JsonResponse
 import json
 from datetime import datetime
@@ -22,7 +22,7 @@ def addEvent(request):
         except Exception as e:
             print("ERROR:",e)
             message['message'] = "FAILURE"
-            status = 401
+            status = 404
     else:
         message['message'] = "FAILURE"
         status = 401
@@ -37,7 +37,9 @@ def eventList(request):
     eventList = list()
     if status==200:
         if message['group']=="clubs":
-            events = models.event.objects.filter(club=message['id'])
+            clubId =  club.objects.get(id=message["id"])
+            message["name"] = clubId.name
+            events = models.event.objects.filter(club__id=message['id'])
             eventList = list()
             for event in  events:
                 eventList.append({
@@ -77,6 +79,7 @@ def eventList(request):
                 req_body = request.body.decode('utf-8')
                 req = json.loads(req_body)
                 clubId = club.objects.get(id = req['club'])
+                message["name"] = clubId.name
                 events =  models.event.objects.filter(club=clubId)
                 for event in  events:
                     eventList.append({
@@ -345,6 +348,7 @@ def signEvent(request):
                 eventId.signed = eventId.signed + 1
             else:
                 eventId.signed = -1
+            print(req["result"],eventId.signed)
             eventId.save()
         except Exception as e:
             print("ERROR:",e)
