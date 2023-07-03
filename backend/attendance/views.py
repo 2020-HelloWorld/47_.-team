@@ -25,7 +25,7 @@ def addDeclaration(request):
         except Exception as e:
                 print("ERROR:",e)
                 message['message'] = "FAILURE"
-                status = 401
+                status = 404
     else:
         message['message'] = "FAILURE"
         status = 401
@@ -59,7 +59,7 @@ def addAttendanceRequest(request):
         except Exception as e:
             print("ERROR:",e)
             message['message'] = "FAILURE"
-            status = 401
+            status = 404
     else:
         message['message'] = "FAILURE"
         status = 401
@@ -77,13 +77,12 @@ def getDeclaration(request):
             declarations = ["hehe"]
             if message["group"]=="faculties":
                 facultyId = faculty.objects.get(id=message["id"])
-                if facultyId.access >= 1:
-                    if facultyId.access == 1:
-                        declarations = models.declaration.objects.filter(student__fams__faculty__id=message["id"], signed = 0)
-                    elif facultyId.access == 2:
-                        declarations = models.declaration.objects.filter(student__department__chairperson__id = facultyId.id, signed = 1)
-                    elif facultyId.access == 3:
-                        declarations = models.declaration.objects.filter(signed = 2)
+                if facultyId.access == 1:
+                    declarations = models.declaration.objects.filter(student__fams__faculty__id=message["id"], signed = 0)
+                elif facultyId.access == 2:
+                    declarations = models.declaration.objects.filter(student__department__chairperson__id = facultyId.id, signed = 1)
+                elif facultyId.access == 3:
+                    declarations = models.declaration.objects.filter(signed = 2)
                         
             elif message["group"] == "students":
                 declarations = models.declaration.objects.filter(student__srn=message["id"])
@@ -123,9 +122,101 @@ def signDeclaration(request):
         except Exception as e:
             print("ERROR:",e)
             message['message'] = "FAILURE"
-            status = 401
+            status = 404
     else:
         message['message'] = "FAILURE"
         status = 401
     return JsonResponse(message,status=status)
 
+def getAttendanceRequest(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)  
+    attendenceRequestList = list()  
+    if status==200:
+        try:
+            attendenceRequest = list()
+            if message["group"] == "clubs":
+                attendenceRequest = models.attendaceRequest.objects.filter(event__club__id=message["id"],signed=0)
+            elif message["group"] == "faculties":
+                facultyId = faculty.objects.get(id=message["id"])
+                if facultyId.access == 1:
+                    attendenceRequest = models.attendaceRequest.objects.filter(student__fams__faculty__id=message["id"], signed = 1)
+                elif facultyId.access == 2:
+                    attendenceRequest = models.attendaceRequest.objects.filter(student__department__chairperson__id = facultyId.id, signed = 2)
+                elif facultyId.access == 3:
+                    attendenceRequest = models.attendaceRequest.objects.filter(signed = 3)
+                
+            for itr in attendenceRequest:
+                attendenceRequestList.append({
+                    "id":itr.id,
+                    "srn":itr.student.srn,
+                    "name":itr.student.name,
+                    "eventid":itr.event.id,
+                    "eventname":itr.event.name,
+                    "status":itr.signed,
+                })
+            message["attendanceRequest"] = attendenceRequestList
+        except Exception as e:
+            print("ERROR:",e)
+            message['message'] = "FAILURE"
+            status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+
+def getAttendanceRequestDetails(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)  
+    attendenceRequestDetails = list()  
+    if status==200:
+        try:
+            subjectAttendance = models.subjectAttendaceRequest.objects.filter(form__id=req["id"])   
+            for itr in subjectAttendance:
+                attendance = models.studentcourse.objects.filter(subject__id=itr.subject.id,student__srn=itr.form.student.srn).first()
+                attendenceRequestDetails.append({
+                    "id":itr.id,
+                    "subject":itr.subject.id,
+                    "subjectName":itr.subject.name,
+                    "date":itr.date,
+                    "starttime":itr.start,
+                    "endtime":itr.end,
+                    "current": attendance.attendance,
+                })
+            message["subjectAttendance"] = attendenceRequestDetails
+        except Exception as e:
+            print("ERROR:",e)
+            message['message'] = "FAILURE"
+            status = 404
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)
+
+
+
+def attendanceApproval(request):
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)  
+    if status==200:
+        try:
+            attendenceRequest = models.attendaceRequest.objects.get(id = req["id"])
+            if req["result"] == True:
+                attendenceRequest.signed = attendenceRequest.signed + 1
+            else:
+                attendenceRequest.signed = -1
+            attendenceRequest.save()
+        except Exception as e:
+            print("ERROR:",e)
+            message['message'] = "FAILURE"
+            status = 401
+    else:
+        message['message'] = "FAILURE"
+        status = 401
+    return JsonResponse(message,status=status)

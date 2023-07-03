@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'project.apps.ProjectConfig',
     'attendance.apps.AttendanceConfig',
+    'blockchain.apps.BlockchainConfig',
     
 ]
 
