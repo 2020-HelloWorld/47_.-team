@@ -9,31 +9,36 @@ const Home = () => {
   console.log(document.cookie);
   const history = useHistory();
   const [showEventsButton, setShowEventsButton] = useState(true);
-  const [showStudentButton, setShowStudentButton] = useState(false); // Add state for student button visibility
+  const [showStudentButton, setShowStudentButton] = useState(false);
+  const [showUploadButton, setShowUploadButton] = useState(false); // Add state for upload button visibility
+  const [showApprovalButton, setShowApprovalButton] = useState(false); // Add state for approval button visibility
+  const [id, setId] = useState(null); // Add state for id
+  const [userGroup, setUserGroup] = useState(null); // Add state for user group
 
   const handleNav = () => {
-    // Navigate to the "Events" page
     history.push('/Events');
     window.location.reload();
   };
 
   const handleProj = () => {
-    // Navigate to the "Project" page
     history.push('/Project');
     window.location.reload();
   };
 
   const handleClub = () => {
-    // Navigate to the "ClubList" page
     history.push('/ClubList');
     window.location.reload();
   };
 
-  const handleStudent = () =>
-  {
-    history.push('/Student')
+  const handleStudent = () => {
+    history.push('/Student');
     window.location.reload();
-  }
+  };
+
+  const handleUpload = () => {
+    history.push('/Uploads');
+    window.location.reload();
+  };
 
   const jsonData = {
     cookies: document.cookie,
@@ -42,7 +47,7 @@ const Home = () => {
   useEffect(() => {
     axios
       .post(TARGET_URL + '/auth', jsonData, {
-        withCredentials: true, // Include this option to send cookies
+        withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -52,10 +57,29 @@ const Home = () => {
 
         if (response.data['group'] === 'faculties') {
           setShowEventsButton(false);
-          setShowStudentButton(true); // Show student button for faculties
+          setShowStudentButton(true);
+          setShowUploadButton(false); // Hide upload button for faculties
+          setShowApprovalButton(true); // Show approval button for faculties
+        } else if (response.data['group'] === 'students') {
+          setShowEventsButton(true);
+          setShowStudentButton(false);
+          setShowUploadButton(true); // Show upload button for students
+          setShowApprovalButton(false); // Hide approval button for students
+        } else if (response.data['group'] === 'clubs') {
+          setUserGroup('clubs'); // Set user group to 'clubs'
+          setShowEventsButton(false); // Hide events button for clubs
+          setShowStudentButton(false);
+          setShowUploadButton(false); // Hide upload button for clubs
+          setShowApprovalButton(false); // Hide approval button for clubs
         } else {
-          console.log('not authenticated');
+          setShowEventsButton(true);
+          setShowStudentButton(false);
+          setShowUploadButton(false); // Hide upload button for any other group
+          setShowApprovalButton(false); // Hide approval button for any other group
         }
+
+        // Set the id state
+        setId(response.data['id']);
       })
       .catch((error) => {
         console.log(error);
@@ -65,7 +89,7 @@ const Home = () => {
   const handleLogout = () => {
     axios
       .post(TARGET_URL + '/logout', jsonData, {
-        withCredentials: true, // Include this option to send cookies
+        withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -89,6 +113,27 @@ const Home = () => {
     window.location.reload();
   };
 
+  const handleApproval = () => {
+    history.push('/Approval');
+    window.location.reload();
+  };
+
+  const handleProfile = (srn) => {
+    history.push('/StudentDetails', { srn });
+    window.location.reload();
+  };
+
+  const handleMyEvents = () => {
+    history.push('/ClubEventList', { club: { id } });
+    window.location.reload();
+  };
+
+  const handleClubApproval = () =>
+  {
+    history.push('/AttendanceApproval');
+    // window.location.reload();
+  }
+
   return (
     <div>
       <nav className="navbar">
@@ -100,34 +145,76 @@ const Home = () => {
               </button>
             </li>
           )}
-          {showStudentButton && ( // Render student button only if showStudentButton is true
+          {showStudentButton && (
             <li className="nav-item">
-              <button onClick={handleStudent} className="ButtonStyle">Student</button>
+              <button onClick={handleStudent} className="ButtonStyle">
+                Student
+              </button>
             </li>
           )}
+          {userGroup === 'clubs' ? (
+            <li className="nav-item">
+              <button onClick={handleMyEvents} className="ButtonStyle">
+                My events
+              </button>
+            </li>
+          ) : null}
+          
+          {userGroup !== 'clubs' ? (
           <li className="nav-item">
             <button onClick={handleProj} className="ButtonStyle">
               Projects
             </button>
           </li>
+          ): null} 
+          
+          {userGroup !== 'clubs' ? (
           <li className="nav-item">
-            <button className="ButtonStyle">Profile</button>
+            <button onClick={() => handleProfile(id)} className="ButtonStyle">
+              Profile
+            </button>
           </li>
+          ): null} 
+
+        {userGroup == 'clubs' ? (
+          <li className="nav-item">
+            <button onClick={handleClubApproval} className="ButtonStyle">
+             Attendance Approval
+            </button>
+          </li>
+          ): null}
+
+
+    
+          
           <li className="nav-item">
             <button onClick={handleClub} className="ButtonStyle">
               Club
             </button>
           </li>
-          <li className="nav-item">
-            <button onClick={handleLogout} className="ButtonStyle">
-              Logout
-            </button>
-          </li>
+          {showUploadButton && (
+            <li className="nav-item">
+              <button onClick={handleUpload} className="ButtonStyle">
+                Upload
+              </button>
+            </li>
+          )}
+          {showApprovalButton && (
+            <li className="nav-item">
+              <button onClick={handleApproval} className="ButtonStyle">
+                Approval
+              </button>
+            </li>
+          )}
+          
+            <li className="nav-item">
+              <button onClick={handleLogout} className="ButtonStyle">
+                Logout
+              </button>
+            </li>
+          
         </ul>
       </nav>
-      <div className="content">
-        <h1>Welcome to My Page!</h1>
-      </div>
     </div>
   );
 };

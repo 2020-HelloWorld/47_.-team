@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Events.css';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+import { TARGET_URL } from './Config';
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [eventsData, setEventsData] = useState([]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -17,28 +20,32 @@ const Events = () => {
     window.location.reload();
   };
 
-  const eventsData = [
-    {
-      eventName: 'Event 1',
-      approvedBy: 'Person A',
-      position: 'Position 1',
-    },
-    {
-      eventName: 'Event 2',
-      approvedBy: 'Person B',
-      position: 'Position 2',
-    },
-    {
-      eventName: 'Event 3',
-      approvedBy: 'Person C',
-      position: 'Position 3',
-    },
-    // Add more events as needed
-  ];
+  useEffect(() => {
+    const fetchEventsData = async () => {
+      try {
+        const response = await axios.post(TARGET_URL + '/events/get/', {
+          cookies: document.cookie,
+        });
+        setEventsData(response.data.events);
+      } catch (error) {
+        console.log('Error:', error);
+      }
+    };
 
-  const filteredEvents = eventsData.filter((event) =>
-    event.eventName.toLowerCase().includes(searchTerm.toLowerCase())
+    fetchEventsData();
+  }, []);
+
+  const filteredEvents = eventsData.filter(
+    (event) =>
+      event.name &&
+      event.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleAddOutsideEvent = () =>
+  {
+    history.push('/AddOutsideEvent');
+    window.location.reload();
+  }
 
   return (
     <div>
@@ -54,8 +61,8 @@ const Events = () => {
         <thead>
           <tr>
             <th>Event Name</th>
-            <th>Signed and Approved By</th>
-            <th>Position</th>
+            <th>Date</th>
+            <th>Details</th>
           </tr>
         </thead>
         <tbody>
@@ -66,16 +73,21 @@ const Events = () => {
                   className="ButtonStyle"
                   onClick={() => handleEventDetails(event)}
                 >
-                  {event.eventName}
+                  {event.name}
                 </button>
               </td>
-              <td>{event.approvedBy}</td>
-              <td>{event.position}</td>
+              <td>{event.date}</td>
+              <td>{event.details}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      
+      <div>
+      <button className='ButtonStyle' onClick={handleAddOutsideEvent}> Add outside event</button>
+      </div>
     </div>
+    
   );
 };
 

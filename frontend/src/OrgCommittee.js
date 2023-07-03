@@ -9,6 +9,7 @@ const OrgCommittee = ({ location }) => {
   const [selectedRole, setSelectedRole] = useState('');
   const [eventId, setEventId] = useState(location.state.eventId);
   const [organisers, setOrganisers] = useState([]);
+  const [group, setGroup] = useState('');
 
   const handleAddMember = () => {
     setShowAddMember(true);
@@ -66,6 +67,7 @@ const OrgCommittee = ({ location }) => {
 
         if (response.status === 200) {
           setOrganisers(response.data['organizers'] || []);
+          setGroup(response.data['group'] || '');
         }
       } catch (error) {
         console.log('Error:', error);
@@ -103,7 +105,7 @@ const OrgCommittee = ({ location }) => {
           <p>No organisers found.</p>
         )}
       </div>
-      {showAddMember ? (
+      {group === 'clubs' && showAddMember ? (
         <div>
           <input
             type="text"
@@ -125,9 +127,11 @@ const OrgCommittee = ({ location }) => {
           </button>
         </div>
       ) : (
-        <button className="ButtonStyle" onClick={handleAddMember}>
-          Add Member
-        </button>
+        group === 'clubs' && (
+          <button className="ButtonStyle" onClick={handleAddMember}>
+            Add Member
+          </button>
+        )
       )}
     </div>
   );

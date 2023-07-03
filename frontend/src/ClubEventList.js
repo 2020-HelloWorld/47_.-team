@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ClubEventList.css';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { TARGET_URL } from './Config.js';
 
@@ -11,10 +11,13 @@ const ClubEventList = () => {
   const [addEventButtonVisible, setAddEventButtonVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [events, setEvents] = useState([]);
+  const [clubName, setClubName] = useState(''); 
   const history = useHistory();
-
+  const location = useLocation();
+  const { club } = location.state || {};
+  
   const handleAddEvent = () => {
-    history.push('/AddEvent');
+    history.push('/AddEvent',{id:club.id});
     window.location.reload();
   };
 
@@ -45,6 +48,7 @@ const ClubEventList = () => {
         const response = await axios.post(
           TARGET_URL + '/events/get/',
           {
+            club: club.id,
             cookies: document.cookie,
           },
           {
@@ -62,6 +66,9 @@ const ClubEventList = () => {
             setAddEventButtonVisible(true);
             setParticipantButtonVisible(true);
             setFacultyButtonVisible(true);
+            if (response.data['name']) {
+              setClubName(response.data['name']); // Set the club name received in the response
+            }
           } else if (response.data['group'] === 'faculties' || response.data['group'] === 'student') {
             setParticipantButtonVisible(true);
           }
@@ -69,6 +76,7 @@ const ClubEventList = () => {
             setFacultyButtonVisible(true);
           }
         }
+        console.log(response);
       } catch (error) {
         console.log('Error:', error);
       }
@@ -76,9 +84,20 @@ const ClubEventList = () => {
 
     fetchData();
   }, []);
-
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const getStatusLabel = (status) => {
+    if (status === 0) {
+      return 'Pending';
+    } else if (status === -1) {
+      return 'Disapproved';
+    } else if (status === 1) {
+      return 'Approved';
+    } else {
+      return 'Unknown';
+    }
   };
 
   const filteredEventList = events.filter((event) =>
@@ -87,7 +106,7 @@ const ClubEventList = () => {
 
   return (
     <div className="clubeventlist-container">
-      <h2 className="clubeventlist-title">Club Event List</h2>
+      <h2 className="clubeventlist-title">Club Event List - {club.id} - {clubName} </h2>
       <div className="search-container">
         <input
           type="text"
@@ -103,6 +122,7 @@ const ClubEventList = () => {
             <th>Event Name</th>
             <th>Date</th>
             <th>Details</th>
+            <th>Status</th>
             <th></th>
             <th></th>
             <th></th>
@@ -118,6 +138,7 @@ const ClubEventList = () => {
               </td>
               <td>{event.date}</td>
               <td>{event.details}</td>
+              <td>{getStatusLabel(event.status)}</td>
               <td>
                 {participantButtonVisible && (
                   <button onClick={() => handleParticipants(event.id, event.name)} className="ButtonStyle">
@@ -132,13 +153,13 @@ const ClubEventList = () => {
                   </button>
                 )}
               </td>
-              {/* <td>
+              <td>
                 {modifyButtonVisible && (
                   <button onClick={() => handleModify(event)} className="ButtonStyle">
                     Modify
                   </button>
                 )}
-              </td> */}
+              </td>
             </tr>
           ))}
         </tbody>

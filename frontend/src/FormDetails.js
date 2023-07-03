@@ -24,6 +24,7 @@ const FormDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+   
 
     // Create FormData object to send the file and other data
     const formData = new FormData();
@@ -48,7 +49,7 @@ const FormDetails = () => {
 
       console.log('Response:', response);
       
-      history.push('./ClubEventList')
+      history.push('./ClubEventList', { club : {id: response.data['id']}})
       window.location.reload();
       // Handle the response or perform any other actions here
     } catch (error) {
@@ -57,23 +58,25 @@ const FormDetails = () => {
     }
 
     
+
+    
   };
 
   return (
     <div className="form-details-container">
-      <h2>Form Details</h2>
-      <p>ID: {id}</p>
-      <p>Name: {name}</p>
+      <h2 className='HTWO'>Form Details</h2>
+      <p className='HTWO'>ID: {id}</p>
+      <p className='HTWO'>Name: {name}</p>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="image">Image:</label>
+          <label className='HTWO' htmlFor="image">Image:</label>
           <input type="file" id="image" accept="image/*" onChange={handleImageChange} />
         </div>
         <div className="form-group">
-          <label htmlFor="report">Report:</label>
+          <label className='HTWO' htmlFor="report">Report:</label>
           <textarea id="report" value={report} onChange={handleReportChange}></textarea>
         </div>
-        <button type="submit">Submit</button>
+        <button className = 'ButtonStyle' onClick={handleSubmit} >Submit</button>
       </form>
     </div>
   );

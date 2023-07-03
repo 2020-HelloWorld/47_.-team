@@ -1,31 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Student.css';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+import { TARGET_URL } from './Config';
 
 const Student = () => {
-  const studentList = [
-    {
-      id: 1,
-      name: 'John Doe',
-      rollNumber: 'PES1UG20CS001',
-      department: 'Computer Science',
-      year: 2,
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      rollNumber: 'PES1UG20CS002',
-      department: 'Computer Science',
-      year: 2,
-    },
-    // Add more student details as needed
-  ];
-
+  const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const history = useHistory();
 
-  const handleStudentName = () => {
-    history.push('./StudentDetails');
+  const handleStudentName = (srn) => {
+    history.push({
+      pathname: './StudentDetails',
+      state: { srn: srn },
+      
+    });
     window.location.reload();
   };
 
@@ -33,9 +22,27 @@ const Student = () => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredStudents = studentList.filter((student) =>
+  const filteredStudents = students.filter((student) =>
     student.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  useEffect(() => {
+    const exampleLink = TARGET_URL + '/students/get';
+
+    axios
+      .post(exampleLink, {
+        cookies: document.cookie,
+      })
+      .then((response) => {
+        // Handle the response
+        console.log(response);
+        setStudents(response.data.students);
+      })
+      .catch((error) => {
+        // Handle the error if needed
+        console.log(error);
+      });
+  }, []);
 
   return (
     <div className="student-container">
@@ -52,25 +59,23 @@ const Student = () => {
       <table className="student-table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Name</th>
-            <th>Roll Number</th>
+            <th>SRN</th>
             <th>Department</th>
-            <th>Year</th>
+            <th>Semester</th>
           </tr>
         </thead>
         <tbody>
           {filteredStudents.map((student) => (
-            <tr key={student.id}>
-              <td>{student.id}</td>
+            <tr key={student.srn}>
               <td>
-                <button className="ButtonStyle" onClick={handleStudentName}>
+                <button className="ButtonStyle" onClick={() => handleStudentName(student.srn)}>
                   {student.name}
                 </button>
               </td>
-              <td>{student.rollNumber}</td>
-              <td>{student.department}</td>
-              <td>{student.year}</td>
+              <td>{student.srn}</td>
+              <td>{student.departmentName}</td>
+              <td>{student.sem}</td>
             </tr>
           ))}
         </tbody>

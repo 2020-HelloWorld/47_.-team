@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { TARGET_URL } from './Config';
 import './Participants.css';
 
 const Participants = () => {
   const location = useLocation();
-  const [eventId, setEventId] = useState('');
+  const history = useHistory();
+  const [eventid, setEventId] = useState('');
   const [eventName, setEventName] = useState('');
   const [participantList, setParticipantList] = useState([]);
-  const [newParticipantSRN, setNewParticipantSRN] = useState('');
+  const [srn, setNewParticipantSRN] = useState('');
   const [showAddParticipant, setShowAddParticipant] = useState(false);
 
   useEffect(() => {
@@ -41,6 +42,7 @@ const Participants = () => {
 
       if (response.status === 200) {
         setParticipantList(response.data.participants);
+        setShowAddParticipant(response.data.group === 'clubs');
       } else {
         console.log('Failed to fetch participants');
       }
@@ -52,52 +54,79 @@ const Participants = () => {
   const handleAddParticipant = () => {
     setShowAddParticipant(true);
   };
+  const refresh =() =>
+  {
+    window.location.reload();
+  }
 
+  
   const handleSaveParticipant = () => {
-    if (newParticipantSRN.trim() !== '') {
+    if (srn.trim() !== '') {
       const newParticipant = {
-        srn: newParticipantSRN,
-        name: 'John Doe', // Replace with actual participant name
+        srn: srn,
+        //name: 'John Doe', // Replace with actual participant name
       };
       setParticipantList((prevList) => [...prevList, newParticipant]);
       setNewParticipantSRN('');
       setShowAddParticipant(false);
-
-      const data = {
-        cookies: document.cookie,
-        eventid: eventId,
-        srn: newParticipantSRN,
-      };
-
+      
+      
+      
+      
+      const formData = new FormData();
+      
+      formData.append('request', JSON.stringify({ eventid, srn, cookies:document.cookie }));
+  
       axios
-        .post(TARGET_URL + '/events/participant/add/', data)
+        .post(TARGET_URL + '/events/participant/add/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
         .then((response) => {
           console.log('POST request successful:', response.data);
+          refresh();
+          
         })
+        
         .catch((error) => {
           console.log('Error:', error);
         });
+        
+        
     }
+    
+  };
+  
+  
+
+  const handleProfile = (srn) => {
+    history.push('/StudentDetails', { srn });
+    window.location.reload();
   };
 
   return (
     <div>
-      <h2 className='htwo'>Participants</h2>
-      <h3 className='hthree'>Event ID: {eventId}</h3>
-      <h3 className='hthree'>Event Name: {eventName}</h3>
+      <h2 className="htwo">Participants</h2>
+      <h3 className="hthree">Event ID: {eventid}</h3>
+      <h3 className="hthree">Event Name: {eventName}</h3>
       <table className="participants-table">
         <thead>
           <tr>
-            <th>SRN</th>
             <th>Name</th>
+            <th>SRN</th>
           </tr>
         </thead>
         <tbody>
           {participantList && participantList.length > 0 ? (
             participantList.map((participant, index) => (
               <tr key={index}>
+                <td>
+                  <button className="ButtonStyle" onClick={() => handleProfile(participant.srn)}>
+                    {participant.name}
+                  </button>
+                </td>
                 <td>{participant.srn}</td>
-                <td>{participant.name}</td>
               </tr>
             ))
           ) : (
@@ -108,22 +137,18 @@ const Participants = () => {
         </tbody>
       </table>
       <div>
-        {showAddParticipant ? (
+        {showAddParticipant && (
           <div>
             <input
               type="text"
               placeholder="Participant SRN"
-              value={newParticipantSRN}
+              value={srn}
               onChange={(e) => setNewParticipantSRN(e.target.value)}
             />
             <button className="ButtonStyle" onClick={handleSaveParticipant}>
               Save Participant
             </button>
           </div>
-        ) : (
-          <button className="ButtonStyle" onClick={handleAddParticipant}>
-            Add Participant
-          </button>
         )}
       </div>
     </div>

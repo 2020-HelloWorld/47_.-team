@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './EventDetails.css';
 import axios from 'axios';
 import { TARGET_URL } from './Config';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { useHistory } from 'react-router-dom';
 
 const EventDetails = (props) => {
   const { event } = props.location.state;
@@ -11,7 +11,6 @@ const EventDetails = (props) => {
   const [imageURL, setImageURL] = useState('');
   const [eventReport, setEventReport] = useState('');
   const history = useHistory();
-
 
   useEffect(() => {
     const jsonData = {
@@ -31,9 +30,9 @@ const EventDetails = (props) => {
 
         if (response.status === 200) {
           setImageURL(response.data.image);
-          setEventReport(response.data.report); // Set the event report from the response
+          setEventReport(response.data.report);
           console.log('verified');
-          if (response.data['group'] === 'clubs') {
+          if (response.data.group === 'clubs') {
             setShowUpload(true);
             console.log('clubs');
           }
@@ -44,7 +43,7 @@ const EventDetails = (props) => {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [event.id]);
 
   const handleReportChange = (e) => {
     setReport(e.target.value);
@@ -54,13 +53,11 @@ const EventDetails = (props) => {
     // Handle image upload logic here
   };
 
-
   const handleModify = (event) => {
     const { id, name } = event;
     history.push('/FormDetails', { id, name });
     window.location.reload();
   };
-
 
   return (
     <div className="event-details-container">
@@ -84,12 +81,14 @@ const EventDetails = (props) => {
           <p>{eventReport}</p>
         </div>
       )}
-      {!eventReport && (
+      {!eventReport && showUpload && (
         <div className="report-container">
-          <button onClick={() => handleModify(event)} className='ButtonStyle'>Add Report</button>
+          <button onClick={() => handleModify(event)} className="ButtonStyle">
+            Add Report
+          </button>
         </div>
       )}
-      {/* ...existing code... */}
+      {/* ...existing code... */} 
     </div>
   );
 };

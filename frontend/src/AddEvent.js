@@ -2,14 +2,23 @@ import React, { useState } from 'react';
 import './AddEvent.css';
 import axios from 'axios';
 import { TARGET_URL } from './Config';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom.min';
+
 
 const AddEvent = () => {
   const [eventName, setEventName] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventDetails, setEventDetails] = useState('');
+  const location = useLocation();
+  const { id } = location.state || {};
 
-  const handleSubmit = async (e) => {
+  // const handleSubmit = async (e) => {
+    
+  // };
+
+  const history = useHistory();
+  const handleAddEvent = async (e) =>
+  {
     e.preventDefault();
 
     try {
@@ -28,7 +37,7 @@ const AddEvent = () => {
           withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
-          },
+          }, 
         }
       );
 
@@ -41,19 +50,14 @@ const AddEvent = () => {
     } catch (error) {
       console.error('Error occurred while adding event:', error);
     }
-  };
-
-  const history = useHistory();
-  const handleAddEvent = () =>
-  {
-    history.push('/ClubeventList')
+    history.push('/ClubEventList',{club: {id:id}});
     window.location.reload();
   }
 
   return (
     <div className="addevent-container">
       <h2 className="addevent-title">Add Event</h2>
-      <form className="addevent-form" onSubmit={handleSubmit}>
+      <form className="addevent-form">
         <div className="addevent-form-group">
           <label htmlFor="eventName">Event Name:</label>
           <input

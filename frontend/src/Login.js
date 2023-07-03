@@ -10,12 +10,12 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const history = useHistory();
 
-  const handleGoToNext = (who) => {
+  const handleGoToNext = (who,uname) => {
     if (who === 'students') {
       history.push('/home');
       window.location.reload();
     } else if (who === 'clubs') {
-      history.push('/ClubEventList');
+      history.push('/ClubEventList', {club : {id: uname}});
       window.location.reload();
 
     } else if (who === 'faculties') {
@@ -50,11 +50,12 @@ const Login = () => {
         })
         .then((response) => {
           console.log(document.cookie+"hi")
+          console.log(response)
           console.log(response.data['sessionid']);
           setCookie('sessionid',response.data['sessionid'],{expires:7});
 
           if (response.status === 200) {
-            handleGoToNext(response.data['group']);
+            handleGoToNext(response.data['group'],username);
           }
         })
         .catch((error) => {
