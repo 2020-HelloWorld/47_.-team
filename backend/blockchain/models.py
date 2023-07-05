@@ -7,3 +7,6 @@ class block(models.Model):
     prevHash = models.CharField(max_length=50)
     data = models.CharField(max_length=500)
     timestamp = models.DateTimeField()
+    users_hash = models.CharField(max_length=50)
+    current_hash = models.CharField(max_length=50)
+    

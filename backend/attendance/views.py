@@ -47,15 +47,22 @@ def addAttendanceRequest(request):
                 event = eventId
             )
             newForm.save()
+            total = 0
             for iter in req["attendancerequest"]:
+                start_datetime = parse(iter["start"]).time()
+                end_datetime = parse(iter["end"]).time()
                 new = models.subjectAttendaceRequest(
                     subject = subject.objects.get(id=iter["subject"]),
                     form = newForm,
                     date = datetime.strptime(iter["date"], "%Y-%m-%d").date(),
-                    start = parse(iter["start"]).time(),
-                    end = parse(iter["end"]).time(),
+                    start = start_datetime,
+                    end = end_datetime,
                 )
                 new.save()
+                time_difference = datetime.combine(datetime.today(), end_datetime) - datetime.combine(datetime.today(), start_datetime)
+                total += time_difference.total_seconds() // 3600
+            newForm.total = total 
+            newForm.save()
         except Exception as e:
             print("ERROR:",e)
             message['message'] = "FAILURE"
@@ -156,6 +163,9 @@ def getAttendanceRequest(request):
                     "eventid":itr.event.id,
                     "eventname":itr.event.name,
                     "status":itr.signed,
+                    "cgpa":itr.student.cgpa,
+                    "total":itr.total,
+                    "department":itr.student.department.id,
                 })
             message["attendanceRequest"] = attendenceRequestList
         except Exception as e:
@@ -206,12 +216,21 @@ def attendanceApproval(request):
     print(message,req)  
     if status==200:
         try:
-            attendenceRequest = models.attendaceRequest.objects.get(id = req["id"])
-            if req["result"] == True:
-                attendenceRequest.signed = attendenceRequest.signed + 1
-            else:
-                attendenceRequest.signed = -1
-            attendenceRequest.save()
+            if message["group"] == "faculties":
+                for itr in req["data"]:
+                    attendenceRequest = models.attendaceRequest.objects.get(id = itr["id"])
+                    if itr["result"] == True:
+                        attendenceRequest.signed = attendenceRequest.signed + 1
+                    else:
+                        attendenceRequest.signed = -1
+                    attendenceRequest.save()
+            elif message["group"] == "clubs":
+                attendenceRequest = models.attendaceRequest.objects.get(id = req["id"])
+                if req["result"] == True:
+                    attendenceRequest.signed = attendenceRequest.signed + 1
+                else:
+                    attendenceRequest.signed = -1
+                attendenceRequest.save()
         except Exception as e:
             print("ERROR:",e)
             message['message'] = "FAILURE"

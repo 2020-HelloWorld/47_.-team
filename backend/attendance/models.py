@@ -28,6 +28,7 @@ class attendaceRequest(models.Model):
     student = models.ForeignKey(student,on_delete=models.CASCADE)
     event = models.ForeignKey(event,on_delete=models.CASCADE)
     signed = models.IntegerField(validators=[MinValueValidator(-1), MaxValueValidator(4)],default=0)
+    total = models.IntegerField(default=0)
     
 class subjectAttendaceRequest(models.Model):
     id = models.AutoField(primary_key=True)
