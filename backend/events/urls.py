@@ -13,4 +13,5 @@ urlpatterns = [
     path('club/get/',views.getClubList),
     path('approvals/get/',views.eventApprovals),
     path('approval/',views.signEvent),
+    path('certificate/',views.downloadCertificate)
 ]

@@ -4,6 +4,11 @@ from home.models import club,student
 from django.http import JsonResponse
 import json
 from datetime import datetime
+from .pdfgen import generate_certificate
+from django.http import FileResponse
+from django.core.files.base import ContentFile
+import io
+
 # Create your views here.
 
 def addEvent(request):
@@ -359,3 +364,23 @@ def signEvent(request):
         status = 401
     return JsonResponse(message,status=status)
             
+            
+def downloadCertificate(request):
+    event_name = "Amazing Conference"
+    student_name = "John Doe"
+
+    # Generate the PDF certificate
+    generate_certificate(event_name, student_name)
+
+    with open("static/temp/certificate.pdf", 'rb') as file:
+        file_data = file.read()
+
+    # Create a BytesIO buffer and write the file data to it
+    buffer = io.BytesIO()
+    buffer.write(file_data)
+    buffer.seek(0)  
+
+    # Create a FileResponse with the buffer as the file content
+    response = FileResponse(buffer, as_attachment=True, filename='certificate.pdf')
+
+    return response
