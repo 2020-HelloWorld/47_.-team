@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from home.views import auth
 from events import models
 from home.models import club,student
@@ -6,8 +7,8 @@ import json
 from datetime import datetime
 from .pdfgen import generate_certificate
 from django.http import FileResponse
-from django.core.files.base import ContentFile
 import io
+from edcred.settings import config
 
 # Create your views here.
 
@@ -366,21 +367,39 @@ def signEvent(request):
             
             
 def downloadCertificate(request):
-    event_name = "Amazing Conference"
-    student_name = "John Doe"
+    req_body = request.body.decode('utf-8')
+    message,status = auth(req_body=req_body)
+    req = json.loads(req_body)
+    print(message,req)
+    if status==200 and message["group"]=="students":
+        eventid_str = req["eventid"]
+        srn = message["id"]
+        event_name = models.event.objects.get(id=req["eventid"]).name
+        student_name = student.objects.get(srn=message["id"]).name
+        # Generate the PDF certificate
+        path = config["NGROK"]+f"/events/certificate/verify?eventid={eventid_str}&srn={srn}"
+        generate_certificate(event_name, student_name,path)
+        with open("static/temp/certificate.pdf", 'rb') as file:
+            file_data = file.read()
 
-    # Generate the PDF certificate
-    generate_certificate(event_name, student_name)
+        # Create a BytesIO buffer and write the file data to it
+        buffer = io.BytesIO()
+        buffer.write(file_data)
+        buffer.seek(0)  
 
-    with open("static/temp/certificate.pdf", 'rb') as file:
-        file_data = file.read()
+        # Create a FileResponse with the buffer as the file content
+        response = FileResponse(buffer, as_attachment=True, filename=f'{event_name}_{student_name}.pdf')
+        print("certificate sent")
+        return response
+    return JsonResponse(message,status=401)
 
-    # Create a BytesIO buffer and write the file data to it
-    buffer = io.BytesIO()
-    buffer.write(file_data)
-    buffer.seek(0)  
-
-    # Create a FileResponse with the buffer as the file content
-    response = FileResponse(buffer, as_attachment=True, filename='certificate.pdf')
-
-    return response
+def verifyEvent(request):
+    eventid = request.GET['eventid']
+    srn = request.GET['srn']
+    event = models.event.objects.filter(participants__srn__srn=srn, id=eventid).first()
+    
+    if event is None:
+        return render(request, 'verify_event.html', context={'event': None})
+    else:
+        return render(request, 'verify_event.html', context={'event': event})
+    

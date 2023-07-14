@@ -1,5 +1,6 @@
 from django.urls import path 
 from . import views
+from django.urls import re_path
 
 urlpatterns = [
     path('add/',views.addEvent),
@@ -13,5 +14,6 @@ urlpatterns = [
     path('club/get/',views.getClubList),
     path('approvals/get/',views.eventApprovals),
     path('approval/',views.signEvent),
-    path('certificate/',views.downloadCertificate)
+    path('certificate/',views.downloadCertificate),
+    re_path(r'^certificate/verify/$',views.verifyEvent)
 ]

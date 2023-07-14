@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Verification</title>
+</head>
+<body>
+    {% if event %}
+        <h1>Event Verification Successful</h1>
+        <p>Event ID: {{ event.id }}</p>
+        <p>Event Name: {{ event.name }}</p>
+        <!-- Add more details to display from the event model as needed -->
+    {% else %}
+        <h1>No Such Record Found</h1>
+    {% endif %}
+</body>
+</html>

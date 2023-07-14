@@ -5,7 +5,8 @@ from reportlab.platypus import SimpleDocTemplate, Spacer, Image
 from reportlab.pdfgen import canvas
 import qrcode
 
-def generate_certificate(event_name, student_name):
+
+def generate_certificate(event_name, student_name,path):
     # Create the PDF document
     pdf = canvas.Canvas("static/temp/certificate.pdf", pagesize=letter)
 
@@ -41,7 +42,8 @@ def generate_certificate(event_name, student_name):
         box_size=10,
         border=4,
     )
-    qr.add_data(f"Certificate for {student_name} in {event_name}")
+    
+    qr.add_data(path)
     qr.make(fit=True)
     qr_image = qr.make_image(fill_color="black", back_color="white")
     qr_filename = "static/temp/qr_code.png"
