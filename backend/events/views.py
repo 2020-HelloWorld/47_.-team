@@ -397,9 +397,10 @@ def verifyEvent(request):
     eventid = request.GET['eventid']
     srn = request.GET['srn']
     event = models.event.objects.filter(participants__srn__srn=srn, id=eventid).first()
+    studentData = student.objects.get(srn=srn)
     
     if event is None:
         return render(request, 'verify_event.html', context={'event': None})
     else:
-        return render(request, 'verify_event.html', context={'event': event})
+        return render(request, 'verify_event.html', context={'event': event,'student':studentData})
     
