@@ -21,6 +21,8 @@ import AddOutsideEvent from './AddOutsideEvent';
 import './App.css';
 import AttendanceApproval from './AttendanceApproval';
 import ReloadOnBackButton from './ReloadOnBackButton';
+import DummyAttendancePage from './DummyAttendancePage';
+import RequestInfo from './RequestInfo'
 
 const App = () => {
   return (
@@ -51,6 +53,8 @@ const App = () => {
             <Route path="/Approval" component={Approval} />
             <Route path= "/AddOutsideEvent" component={AddOutsideEvent}/>
             <Route path= "/AttendanceApproval" component={AttendanceApproval}/>
+            <Route path = "/DummyAttendancePage" component={DummyAttendancePage}/>
+            <Route path = "/RequestInfo" component={RequestInfo}/>
           </Switch>
         </div>
         <div className="rotating-container">
