@@ -102,8 +102,8 @@ def listProjects(request):
                 students = models.studentProject.objects.filter(project__id = project.id)
                 for itr in students:
                     studentsList.append({
-                        "name":itr.name,
-                        "srn":itr.srn
+                        "name":itr.student.name,
+                        "srn":itr.student.srn
                     })
                 guide = None 
                 event = None
@@ -158,8 +158,8 @@ def projectDetails(request):
             students = models.studentProject.objects.filter(project__id = project.id)
             for itr in students:
                 studentsList.append({
-                    "name":itr.name,
-                    "srn":itr.srn
+                    "name":itr.student.name,
+                    "srn":itr.student.srn
                 })
             guide = None 
             event = None
@@ -208,31 +208,31 @@ def approvalList(request):
     req = json.loads(req_body)
     print(req,message)
     if status==200:
-        try:
+        # try:
             projectsList = list()
             projectsSub = list()
             projectsHack = list()
             projectsCap = list()
             projectExt = list()
             if message["group"] == "clubs":
-                projectsHack = list(models.project.objects.filter(hackathon__club__id=message["id"],approval=0,category="hackathon",isCollege=True) )
+                projectsHack = list(models.project.objects.filter(hackathon__club__id=message["id"],approval=0,category="hackathon",withCollege=True) )
             elif message["group"] == "faculties":
                 facultyId = faculty.objects.get(id=message["id"])
-                if facultyId.access == 1:
-                    projectsSub = list(models.project.objects.filter(guide__id=message["id"],approval=0,category="subject",isCollege=True))
-                    projectsHack = list(models.project.objects.filter(guide__id=message["id"],approval=1,category="hackathon",isCollege=True)) 
-                    projectsCap = list(models.project.objects.filter(guid__id=message["id"],approval=0,category="capstone",isCollege=True))
-                    projectExt = list(models.project.objects.filter(guide__id=message["id"],approval=0,isCollege=False))
+                if facultyId.access >= 1:
+                    projectsSub = list(models.project.objects.filter(guide__id=message["id"],approval=0,category="subject",withCollege=True))
+                    projectsHack = list(models.project.objects.filter(guide__id=message["id"],approval=1,category="hackathon",withCollege=True)) 
+                    projectsCap = list(models.project.objects.filter(guide__id=message["id"],approval=0,category="capstone",withCollege=True))
+                    projectExt = list(models.project.objects.filter(guide__id=message["id"],approval=0,withCollege=False))
                 elif facultyId.access == 2:
-                    projectsCap = list(models.project.objects.filter(department__chairperson__id=message["id"],approval=0,category="capstone",isCollege=True) )
+                    projectsCap = list(models.project.objects.filter(department__chairperson__id=message["id"],approval=0,category="capstone",withCollege=True) )
             projects = projectsSub+projectsHack+projectsCap+projectExt
             for project in projects:
                 studentsList = list()
                 students = models.studentProject.objects.filter(project__id = project.id)
                 for itr in students:
                     studentsList.append({
-                        "name":itr.name,
-                        "srn":itr.srn
+                        "name":itr.student.name,
+                        "srn":itr.student.srn
                     })
                 guide = None 
                 event = None
@@ -267,9 +267,9 @@ def approvalList(request):
                     "students":studentsList,
                 })
             message["projects"] = projectsList
-        except:
-            message['message'] = "FAILURE"
-            status = 404
+        # except:
+        #     message['message'] = "FAILURE"
+        #     status = 404
     else:
         message['message'] = "FAILURE"
         status = 401
