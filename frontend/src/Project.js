@@ -1,6 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import './Project.css';
+import axios from 'axios';
+import { TARGET_URL } from './Config';
 
 const Project = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,19 +36,76 @@ const Project = () => {
     project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    cookies: document.cookie,
+    withCollege:true,
+    category:"capstone",
+    title: '',
+    details: '',
+    link: '',
+    guide: '',
+    department: '',
+  });
+
+  const handleAddProject = () => {
+    setFormData({
+    cookies: document.cookie,
+    withCollege:true,
+    category:"capstone",
+    title: '',
+    details: '',
+    link: '',
+    guide: '',
+    department: '',
+    });
+
+    setShowForm(true);
+  };
+
+  const handleFormInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const response = await axios.post(TARGET_URL + '/project/add/',formData,{
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      // Optionally, you can handle the response here
+      console.log('Response:', response.data);
+  
+      // Close the form after submission
+      setShowForm(false);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('http://192.168.15.204:8000/');
-        const data = await response.json();
-        setProjectData(data);
+        const response = await axios.post(TARGET_URL + '/project/list/', {
+          cookies: document.cookie,
+        });
+        console.log(response);
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.log('Error:', error);
       }
     };
-    fetchProjects();
-  }, []);
 
+    fetchData();
+  }, []);
 
   return (
     <div className="project-page">
@@ -60,13 +118,74 @@ const Project = () => {
           onChange={handleSearch}
         />
       </div>
+
+      {/* "Add Project" button */}
+      <button className='ButtonStyle' onClick={handleAddProject}>Add Project</button>
+
+      {/* Form for adding a new project */}
+      {showForm && (
+        <form onSubmit={handleFormSubmit} className="project-form">
+          <label>
+          </label>
+          <label>
+            Title:
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleFormInputChange}
+            />
+          </label>
+          <label>
+            Details:
+            <textarea
+              name="details"
+              value={formData.details}
+              onChange={handleFormInputChange}
+              rows={5}
+            />
+          </label>
+          <label>
+            Link:
+            <input
+              type="text"
+              name="link"
+              value={formData.link}
+              onChange={handleFormInputChange}
+            />
+          </label>
+          <label>
+            Guide:
+            <input
+              type="text"
+              name="guide"
+              value={formData.guide}
+              onChange={handleFormInputChange}
+            />
+          </label>
+          <label>
+            Department:
+            <input
+              type="text"
+              name="department"
+              value={formData.department}
+              onChange={handleFormInputChange}
+            />
+          </label>
+
+          <button type="submit">Submit</button>
+        </form>
+      )}
+
       <table className="project-table">
         <thead>
           <tr>
-            <th>$data</th>
-            <th>Details</th>
+            <th>Project title</th>
+            <th>Abstract</th>
             <th>Created By</th>
             <th>Status</th>
+            <th>Git Hub Repo Link</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
