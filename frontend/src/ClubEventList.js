@@ -92,7 +92,7 @@ const ClubEventList = () => {
     if (status === 0) {
       return 'Pending';
     } else if (status === -1) {
-      return 'Disapproved';
+      return 'Report needed ';
     } else if (status === 1) {
       return 'Approved';
     } else {
