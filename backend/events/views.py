@@ -232,19 +232,18 @@ def organizerList(request):
     req_body = request.body.decode('utf-8')
     message,status = auth(req_body=req_body)
     if status==200:
-        if message['group']=="clubs":
-            req = json.loads(req_body)
-            print(req)
-            eventId = models.event.objects.get(id=req["eventid"])
-            organizers = models.organizer.objects.filter(event=eventId)
-            print(organizers)
-            organizer_list = list()
-            for organizer in  organizers:
-                organizer_list.append({
-                    "srn" : organizer.srn.srn,
-                    "name":organizer.srn.name,
-                    "role" : organizer.role,
-                })
+        organizer_list = list()
+        req = json.loads(req_body)
+        print(req)
+        eventId = models.event.objects.get(id=req["eventid"])
+        organizers = models.organizer.objects.filter(event=eventId)
+        print(organizers)
+        for organizer in  organizers:
+            organizer_list.append({
+                "srn" : organizer.srn.srn,
+                "name":organizer.srn.name,
+                "role" : organizer.role,
+            })
         message["organizers"] = organizer_list
     return JsonResponse(message,status=status)
 
